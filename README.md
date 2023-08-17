@@ -1,6 +1,6 @@
 # Sawpit 
 
-Sawpit is an asset tracking system for tracking wooden beams at 
+Sawpit is an asset tracking system for tracking wooden beams  
 
 -----
 
@@ -42,26 +42,59 @@ Push your changes to this branch and run upgrade.php, see the [upgrading documen
 
 ## RFID
 
-RFID support is TBD.  
+RFID support plan.
 
 The downside of RFID vs barcode is that with RFID you never know exactly which beam you scanned.  You could point it at one beam and actually scan a different beam in the stack. The barcode laser ensures the worker knows exactly which beam was scanned.    For workers doing manual scans, barcode is better.
    
 
 Where RFID is good is for area scans, since it can scan many tags at once. I think the solution is to mount RFID scanners with GPS on the forklifts.   As the forklift drives around the RFID scanner will pick up various tags.  Every time the forklift sees a tag, it sends the current GPS coordinates and tagID to the sawpit.app server.   Sawpit.app keeps track of the last known GPS coordinates where each beam was seen.   If beams are always moved by forklift this automatically keeps track of where they are without the workers having to do anything.
 
+Seeonic SightWare has a 4 port device with cellular and gps ready to go. Price on request.
 
 ## Labels
 
-We want the biggest we can fit so that they are easy to read at night and there is room for staples without killing the rfid or barcode.
+We want the biggest we can fit so that they are easy to read at night and there is room for staples without killing the rfid or barcode.  The inlay should be small enough so we can put it behind a barcode and then the the barcode will serve as the keep-out area for staples. 
 
 
-Most likely 4x2 or 3x1.  Z-Perform 1500T is paper, not rated for outdoors but seems to be all that is availble with rfid on  the zebra stock price list.
+Most likely 4x2 or 3x1.  Z-Perform 1500T is paper, not rated for outdoors but seems to be all that is availble with rfid on  the zebra stock price list.  Zebra ZBR2000 RFID inlay will work with 4x2, the size is 3.74x0.31 
 
 Thermal Transfer RFID Labels - pair with Zebra's 6000 wax or 3200 wax/resin ribbon
 4 x 2 10033971 X ZBR2000 UCODE 8 Z-Perform 1500T 500 2 3 lbs. X 78.39 $ 0.157 + .02 for ribion = $0.18 per label
 Stores 128bit/16 char user serial + 48bit/6char TID
 05586GS11007 - ZEBRA 4.33" X 243' 5586 WAX/RESIN RIBBON (CASE)  $85.61 per case, 12 
 
-
-
 Z-Xtreme 4000T High-Tack Up to 3 years outdoors would be good but may have to get custom printed. 
+
+
+
+## Costs
+
+Cost for 25k item inventory:
+
+Startup costs estimates:
+    1 SightWare-FT1-FCC to mount on forklift = $5000 ??? waiting on quote 
+    25k rfid labels at $0.2 ea = $5000
+    5 ipads or laptops       = $5000  -- already have?
+    3 Zebra ZD621R label printers = $6000 (get wifi and 300 dpi)
+    5 bluetooth barcode readers for tables = $500
+    5 usb barcode readers for computers = $100
+    3 umbrella carts with YETI500X for power  = $2000
+        Cart holds yeti battery, trashcan, computer, printer,  keyboard, staple gun
+        Umbrella or something to shade screen/ protect from rain 
+        https://www.homedepot.com/p/Husky-2-Tier-Plastic-4-Wheeled-Service-Cart-in-Black-12603/205736982
+
+
+
+    Total: @25k startup cost estimate
+
+
+Monthly recurring costs estimates:
+    Sawpit.app Software as a service  $0.10 item/month  = $2500 
+        Includes backups, hosting, maintenance, security updates
+        Includes 10hrs of feature work/support a month
+        Archived items cost zero
+
+    Sim card for SightWare = $100?
+
+
+    Total Monthly:  $2600 
