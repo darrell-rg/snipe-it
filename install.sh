@@ -11,3 +11,14 @@ fi
 wget https://raw.githubusercontent.com/snipe/snipe-it/master/snipeit.sh
 chmod 744 snipeit.sh
 ./snipeit.sh 2>&1 | tee -a /var/log/snipeit-install.log
+
+
+#use certbot for letsencrypt
+snap install --classic certbot
+certbot --apache
+
+#change the git origin 
+cd /var/www/html/snipeit
+git remote set-url origin git@github.com:darrell-rg/snipe-it.git
+#actually, use the https so we do not have to put our private key on the server
+git remote set-url origin https://github.com/darrell-rg/snipe-it.git
