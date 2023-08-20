@@ -1415,6 +1415,9 @@
             $(this).find(".modal-header").text(title);
         });
 
+        console.log("test sawpit changes");
+
+
     </script>
     @include ('partials.bootstrap-table')
 

@@ -376,6 +376,39 @@
     });
 
 
+    if (window.jQuery) {
+        // jQuery is available.
+
+        // Print the jQuery version, e.g. "1.0.0":
+        console.log(window.jQuery.fn.jquery);
+    }
+
+    function round2(x) {
+        return Number.parseFloat(x).toFixed(2);
+    }
+
+
+
+
+    function calcBDF(){
+        const bdf_el = document.getElementById("_snipeit_bdf_8");
+        const length_el = document.getElementById("_snipeit_length_7");
+        const height_el = document.getElementById("_snipeit_height_5");
+        const width_el = document.getElementById("_snipeit_width_4");
+
+        const l = 0.0 + length_el.value;
+        const h = 0.0 + height_el.value; //thickness
+        const w = 0.0 + width_el.value;
+
+        const bdf = round2(((w*h)/12) * l);
+
+        if(bdf > 0)
+            bdf_el.value = bdf;
+    }
+
+    $( "#_snipeit_length_7,#_snipeit_height_5,#_snipeit_width_4" ).on( "change", function() {
+        calcBDF()
+    } );
 
 
 </script>

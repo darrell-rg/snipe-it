@@ -1,4 +1,5 @@
 #use this to install on an fresh ubuntu 22.04 box
+# you will need at least 4gb of ram for vscode remote phptools to work
 #wget https://raw.githubusercontent.com/darrell-rg/snipe-it/master/install.sh
 
 # ensure running as root
