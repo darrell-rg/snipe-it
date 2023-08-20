@@ -1,3 +1,6 @@
+#use this to install on an fresh ubuntu 22.04 box
+#wget https://raw.githubusercontent.com/darrell-rg/snipe-it/master/install.sh
+
 # ensure running as root
 if [ "$(id -u)" != "0" ]; then
     #Debian doesnt have sudo if root has a password.
@@ -8,7 +11,7 @@ if [ "$(id -u)" != "0" ]; then
     fi
 fi
 
-wget https://raw.githubusercontent.com/snipe/snipe-it/master/snipeit.sh
+wget https://raw.githubusercontent.com/darrell-rg/snipe-it/master/snipeit.sh
 chmod 744 snipeit.sh
 ./snipeit.sh 2>&1 | tee -a /var/log/snipeit-install.log
 
