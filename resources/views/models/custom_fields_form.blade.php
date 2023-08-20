@@ -88,6 +88,7 @@
 
 
 <script nonce="{{ csrf_token() }}">
+    console.log("$ === jQuery", $ === jQuery)
     // We have to re-call the tooltip since this is pulled in after the DOM has loaded
     $('[data-tooltip="true"]').tooltip({
         container: 'body',
