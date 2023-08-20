@@ -26,3 +26,9 @@ cd /var/www/html/snipeit
 git remote set-url origin git@github.com:darrell-rg/snipe-it.git
 #actually, use the https so we do not have to put our private key on the server
 git remote set-url origin https://github.com/darrell-rg/snipe-it.git
+
+
+#for dev only
+cd /var/www/html/snipeit
+git config --global user.email "darrell@sawpit.app"
+git config --global user.name "Darrell Taylor"
