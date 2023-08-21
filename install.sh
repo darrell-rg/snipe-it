@@ -1,7 +1,7 @@
 #use this to install on an fresh ubuntu 22.04 box
 # you will need at least 4gb of ram for vscode remote phptools to work
 #wget https://raw.githubusercontent.com/darrell-rg/snipe-it/master/install.sh
-
+sudo apt update
 # ensure running as root
 if [ "$(id -u)" != "0" ]; then
     #Debian doesnt have sudo if root has a password.
