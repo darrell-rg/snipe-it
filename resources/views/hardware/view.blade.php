@@ -829,8 +829,13 @@
                                         </a>
                                     </div>
                                 @else
-                                    <!-- generic image goes here -->
+
                                 @endif
+                                    <div class="text-center col-md-12" style="padding-bottom: 15px;">
+                                        <!-- <a href="{{ ($asset->getImageUrl()) ? $asset->getImageUrl() : null }}" data-toggle="lightbox"> -->
+                                            <img src="/img/blank.png" class="assetimg img-responsive" alt="map" id="mapImage" style="display:none">
+                                        <!-- </a> -->
+                                    </div>
 
                                     <!-- Start side button column -->
 
@@ -1421,4 +1426,5 @@
     </script>
     @include ('partials.bootstrap-table')
 
+    @include('partials.gps', [ 'loadMap'=>'true'])
 @stop

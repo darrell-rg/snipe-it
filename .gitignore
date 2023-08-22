@@ -71,3 +71,4 @@ storage/ldap_client_tls.cert
 storage/ldap_client_tls.key
 todo.txt
 rmjImport/maps/*
+public/img/maps/*

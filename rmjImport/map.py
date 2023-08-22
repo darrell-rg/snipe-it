@@ -16,6 +16,8 @@ pp = pprint.PrettyPrinter(indent=4)
 current_time = datetime.datetime.now()
 
 
+outputFormat = 'WEBP'
+outputExtension = '.webp'
 
 def decimal_gps_to_exif(decimal):
     
@@ -115,10 +117,11 @@ def createMapImage(map_image, mark_pos=[640, 480], mark_gps=[39.99103771661651, 
 
     # pp.pprint(gps_ifd)
 
-    final.save(output_file_name, format='JPEG', quality=75, exif=exif.tobytes())
+    final.save(output_file_name, format=outputFormat, quality=75, exif=exif.tobytes())
 
+goodMapGrids="B4,C1,C6,C7,C8,CA,CG,CH,D2,D3,D4,D5,E2,E3,E4,E5,E6,E9,EC,G5,G8,GA,GB,H1,H6,H7,H8,H9,HA,HB,HC,HD,HE,HF,HG,HL,HI,HH,HJ".split(",")
 
-def generateMapImages(folder="./maps",mapFilename='rmjcMapWithScale.png'):
+def generateMapImages(folder="../public/img/maps/",mapFilename='rmjcMapWithScale.png'):
 
     #topleft is nw of corner of blue box behind shed
     # formate is y,x
@@ -153,17 +156,18 @@ def generateMapImages(folder="./maps",mapFilename='rmjcMapWithScale.png'):
             mark_x = xi * pix_x_inc
             mark_y = yi * pix_y_inc
             mark_pos = [math.floor(mark_x),math.floor(mark_y)]
-            filename = f"{folder}/{x_grid}{y_grid}_{mark_x}_{mark_y}.jpg" 
-            filename = f"{folder}/{x_grid}{y_grid}.jpg" 
-
-            print(f"writing {filename} gps = {gps} mark={mark_pos}")
-            #https://www.google.com/maps/place/39%C2%B059'25.0%22N+105%C2%B004'21.1%22W/@39.990266,-105.0731717,421m/data=!3m2!1e3!4b1!4m4!3m3!8m2!3d39.990265!4d-105.072528?entry=ttu
-            #https://www.google.com/maps/@39.9903441,-105.0730027,421m/data=!3m1!1e3?entry=ttu
-            gps_dict = {'filename':filename,'lng':gps_x,'lat':gps_y,'mark_x_pos':mark_x,'mark_y_pos':mark_y}
-            name_gps_tripples.append(gps_dict)
+            grid = f"{x_grid}{y_grid}"
+            filename = f"{folder}/{grid}_{mark_x}_{mark_y}"+outputExtension 
+            filename = f"{folder}/{grid}"+outputExtension 
 
 
-            createMapImage(mapImg, mark_pos, gps, filename, label=False)
+            if grid in goodMapGrids:
+                print(f"writing {filename} gps = {gps} mark={mark_pos}")
+                #https://www.google.com/maps/place/39%C2%B059'25.0%22N+105%C2%B004'21.1%22W/@39.990266,-105.0731717,421m/data=!3m2!1e3!4b1!4m4!3m3!8m2!3d39.990265!4d-105.072528?entry=ttu
+                #https://www.google.com/maps/@39.9903441,-105.0730027,421m/data=!3m1!1e3?entry=ttu
+                gps_dict = {'filename':filename,'lng':gps_x,'lat':gps_y,'mark_x_pos':mark_x,'mark_y_pos':mark_y}
+                name_gps_tripples.append(gps_dict)
+                createMapImage(mapImg, mark_pos, gps, filename, label=False)
 
             # break
     
