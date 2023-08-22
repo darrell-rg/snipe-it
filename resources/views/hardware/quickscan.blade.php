@@ -201,5 +201,5 @@
         $("#audit_tag").focus();
 
     </script>
-     @include('partials.gps')
+     @include('partials.gps', ['noteSelector'=>'#note', 'mapLinkSelector'=>'#map-link', 'startGpsWatcher'=>'true']))
 @stop

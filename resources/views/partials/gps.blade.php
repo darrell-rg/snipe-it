@@ -46,7 +46,6 @@
     }
 
     function startGpsWatcher(note="#note", mapLink="#map-link"){
-        noteSelector = note;
         mapLinkSelector = mapLink;
         if (navigator.geolocation) {
             const options = {
@@ -60,11 +59,20 @@
         }
         console.log("Gps watcher started")
     }
-    
-    $(document).ready(function(){
-        startGpsWatcher()
-    })
 
+    @if (isset($noteSelector))
+        noteSelector = '{{$noteSelector}}';
+    @endif
+
+    @if (isset($mapLinkSelector))
+        mapLinkSelector = '{{$mapLinkSelector}}';
+    @endif
+
+    @if (isset($startGpsWatcher))
+        $(document).ready(function(){
+            startGpsWatcher()
+        })
+    @endif
 
 </script>
 
