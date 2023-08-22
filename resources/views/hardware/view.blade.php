@@ -831,11 +831,7 @@
                                 @else
 
                                 @endif
-                                    <div class="text-center col-md-12" style="padding-bottom: 15px;">
-                                        <!-- <a href="{{ ($asset->getImageUrl()) ? $asset->getImageUrl() : null }}" data-toggle="lightbox"> -->
-                                            <img src="/img/blank.png" class="assetimg img-responsive" alt="map" id="mapImage" style="display:none">
-                                        <!-- </a> -->
-                                    </div>
+
 
                                     <!-- Start side button column -->
 
@@ -963,6 +959,13 @@
                                     </div>
 
                                 @endif
+
+                                <!--Map Image -->
+                                <div class="text-center col-md-12" style="padding-bottom: 15px;">
+                                    <a href="/img/blank.png" data-toggle="lightbox" id="mapImagelink">
+                                        <img src="/img/blank.png" class="assetimg img-responsive" alt="map" id="mapImage" style="display:none">
+                                    </a>
+                                </div>
                             </div> <!-- div.col-md-4 -->
                         </div><!-- /row -->
                     </div><!-- /.tab-pane asset details -->
