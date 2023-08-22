@@ -34,7 +34,7 @@
                             {{ Form::label('asset_tag', trans('general.asset_tag'), array('class' => 'col-md-3 control-label', 'id' => 'audit_tag')) }}
                             <div class="col-md-9">
                                 <div class="input-group date col-md-5" data-date-format="yyyy-mm-dd">
-                                    <input type="text" class="form-control" name="asset_tag" id="asset_tag" value="{{ Request::old('asset_tag') }}">
+                                    <input type="text" class="form-control" name="asset_tag" id="asset_tag" value="{{ Request::old('asset_tag') }}" autocomplete="off">
 
                                 </div>
                                 {!! $errors->first('asset_tag', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
@@ -79,6 +79,8 @@
                             <div class="col-md-8">
                                 <textarea class="col-md-6 form-control" id="note" name="note">{{ old('note') }}</textarea>
                                 {!! $errors->first('note', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                <br>
+                                <a id="map-link" target="_blank"></a>
                             </div>
                         </div>
 
@@ -164,9 +166,11 @@
                 },
                 error: function (data) {
                     handleAuditFail(data);
+                    $("#audit_tag").focus();
                 },
                 complete: function() {
                     $('#audit-loader').hide();
+                    $("#audit_tag").focus();
                 }
 
             });
@@ -195,6 +199,59 @@
         }
 
         $("#audit_tag").focus();
+
+        function makeMapLink(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const acc = Math.ceil(position.coords.accuracy)
+            const mapLink = document.querySelector("#map-link");
+            mapLink.href = "";
+            mapLink.textContent = "";
+            mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+            mapLink.textContent = `Show @${latitude}°,${longitude}° on Map.`;
+        }
+        function encodePosition(position) {
+            return "@"+position.coords.latitude+","+position.coords.longitude
+        }
+        function handlePositionUpdate(position) {
+            var note_el = document.getElementById("note");
+            const acc = Math.ceil(position.coords.accuracy);
+            note_el.value = encodePosition(position) + "\n Accuracy:"+acc+"m";  // 95% confidence level,meters
+            makeMapLink(position);
+        }
+        function handlePositionError(e) {
+            const mapLink = document.querySelector("#map-link");
+            mapLink.href = "";
+            mapLink.textContent = `GPS Error: ${E}`;
+            console.log(e);
+        }
+        function requestPosition(){
+            //get one gps fix
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0,
+            };
+            //Dummy one, which will result in a working next statement. this is safari bug workaround
+            navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
+            //The working next statement.
+            navigator.geolocation.getCurrentPosition(handlePositionUpdate, handlePositionError, options);
+        }
+        
+        $(document).ready(function(){
+            
+            if (navigator.geolocation) {
+                const options = {
+                    enableHighAccuracy: false,
+                    timeout: 5000,
+                    maximumAge: 5000,
+                };
+                const gpsWatch = navigator.geolocation.watchPosition(handlePositionUpdate, handlePositionError, options);
+            } else {
+                handlePositionError("GPS not found, try enabling location access in browser settings.")
+            }
+        })
+
 
     </script>
 @stop
