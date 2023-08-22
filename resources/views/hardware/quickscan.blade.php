@@ -200,58 +200,6 @@
 
         $("#audit_tag").focus();
 
-        function makeMapLink(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            const acc = Math.ceil(position.coords.accuracy)
-            const mapLink = document.querySelector("#map-link");
-            mapLink.href = "";
-            mapLink.textContent = "";
-            mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-            mapLink.textContent = `Show @${latitude}°,${longitude}° on Map.`;
-        }
-        function encodePosition(position) {
-            return "@"+position.coords.latitude+","+position.coords.longitude
-        }
-        function handlePositionUpdate(position) {
-            var note_el = document.getElementById("note");
-            const acc = Math.ceil(position.coords.accuracy);
-            note_el.value = encodePosition(position) + "\n Accuracy:"+acc+"m";  // 95% confidence level,meters
-            makeMapLink(position);
-        }
-        function handlePositionError(e) {
-            const mapLink = document.querySelector("#map-link");
-            mapLink.href = "";
-            mapLink.textContent = `GPS Error: ${E}`;
-            console.log(e);
-        }
-        function requestPosition(){
-            //get one gps fix
-            const options = {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0,
-            };
-            //Dummy one, which will result in a working next statement. this is safari bug workaround
-            navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
-            //The working next statement.
-            navigator.geolocation.getCurrentPosition(handlePositionUpdate, handlePositionError, options);
-        }
-        
-        $(document).ready(function(){
-            
-            if (navigator.geolocation) {
-                const options = {
-                    enableHighAccuracy: false,
-                    timeout: 5000,
-                    maximumAge: 5000,
-                };
-                const gpsWatch = navigator.geolocation.watchPosition(handlePositionUpdate, handlePositionError, options);
-            } else {
-                handlePositionError("GPS not found, try enabling location access in browser settings.")
-            }
-        })
-
-
     </script>
+     @include('partials.gps')
 @stop

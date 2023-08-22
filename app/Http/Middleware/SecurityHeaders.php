@@ -43,12 +43,12 @@ class SecurityHeaders
 
         $feature_policy[] = "accelerometer 'none'";
         $feature_policy[] = "autoplay 'none'";
-        $feature_policy[] = "camera 'none'";
+        $feature_policy[] = "camera 'self'";
         $feature_policy[] = "display-capture 'none'";
-        $feature_policy[] = "document-domain 'none'";
+        // $feature_policy[] = "document-domain 'none'"; document-domain is depricated
         $feature_policy[] = "encrypted-media 'none'";
         $feature_policy[] = "fullscreen 'none'";
-        $feature_policy[] = "geolocation 'none'";
+        $feature_policy[] = "geolocation 'self'";
         $feature_policy[] = "sync-xhr 'none'";
         $feature_policy[] = "usb 'none'";
         $feature_policy[] = "xr-spatial-tracking 'none'";
