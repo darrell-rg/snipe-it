@@ -3,16 +3,20 @@
     let noteSelector = "#note";
     let mapLinkSelector = "#map-link";
     let gpsWatch = null;
-    let showAccuracy = true;
+    let showAccuracy = false;
     function makeMapLink(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         const acc = Math.ceil(position.coords.accuracy)
         const mapLink = document.querySelector(mapLinkSelector);
-        mapLink.href = "";
-        mapLink.textContent = "";
-        mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-        mapLink.textContent = `Show @${latitude}°,${longitude}° on Map.`;
+        if(mapLink)
+        {
+            mapLink.href = "";
+            mapLink.textContent = "";
+            mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+            mapLink.textContent = `Show @${latitude}°,${longitude}° on Map.`;
+        }
+
     }
     function encodePosition(position) {
         return "@"+position.coords.latitude+","+position.coords.longitude
@@ -73,6 +77,16 @@
             startGpsWatcher()
         })
     @endif
+
+
+    @if (isset($addClickToSetGpsLink))
+        noteSelector = "#_snipeit_lastgpsping_16";
+        showAccuracy = false;
+        document.querySelector(noteSelector+" + p").addEventListener("click", requestPosition);
+    @endif
+
+
+
 
 </script>
 

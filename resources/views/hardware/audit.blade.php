@@ -107,3 +107,7 @@
         </div> <!--/.col-md-7-->
     </div>
 @stop
+
+@section('moar_scripts')
+    @include('partials.gps', ['noteSelector'=>'#note', 'mapLinkSelector'=>'#map-link', 'startGpsWatcher'=>'true'])
+@stop

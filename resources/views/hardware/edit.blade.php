@@ -425,4 +425,5 @@
 
 
 </script>
+@include('partials.gps', [ 'addClickToSetGpsLink'=>'true'])
 @stop
