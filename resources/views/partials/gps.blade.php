@@ -95,10 +95,17 @@
             //devine map from item id
             var index = {{$asset->id}};
             grid = goodMapGrids[index = index % 10];
-            // console.log("lastGps ", '{{$asset->_snipeit_lastgpsping_16}}') 
-            const map_el = document.getElementById("mapImage");
-            map_el.src = "/img/maps/"+grid+".webp";
-            map_el.style = '';
+
+            var lastGpsString = '{{$asset->_snipeit_lastgpsping_16}}';
+
+            //only show map if we have gps data
+            if (lastGpsString.length > 4 )
+            {
+                const map_el = document.getElementById("mapImage");
+                map_el.src = "/img/maps/"+grid+".webp";
+                map_el.style = '';
+            }
+
         @endif
 
     @endif
