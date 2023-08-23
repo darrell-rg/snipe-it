@@ -14,9 +14,10 @@ function round2(x) {
 
 function calcBDF(){
     const bdf_el = document.getElementById("_snipeit_bdf_8");
-    // const length_el = document.getElementById("_snipeit_length_7");
-    // const height_el = document.getElementById("_snipeit_height_5");
-    // const width_el = document.getElementById("_snipeit_width_4");
+    const height_el = document.getElementById("_snipeit_height_5");
+    const width_el = document.getElementById("_snipeit_width_4");
+    const length_el = document.getElementById("_snipeit_length_7");
+    const name_el = document.getElementById("name");
 
     const l = parseFloat(document.getElementById("_snipeit_length_7").value);
     const h = parseFloat(document.getElementById("_snipeit_height_5").value); //thickness
@@ -26,6 +27,8 @@ function calcBDF(){
 
     if(bdf > 0)
         bdf_el.value = bdf;
+
+    name_el.value = [height_el.value,width_el.value,length_el.value].join("x");
 }
 
 function calcPurchaseCost(){
@@ -44,7 +47,7 @@ $( "#_snipeit_length_7,#_snipeit_height_5,#_snipeit_width_4" ).on( "change", fun
     calcBDF()
 } );
 
-$( "#bdf_cost_el,#freight_el,#bdf_el" ).on( "change", function() {
+$( "#_snipeit_bdf_cost_10,#_snipeit_freight_11,#_snipeit_bdf_8" ).on( "change", function() {
     calcPurchaseCost()
 } );
 

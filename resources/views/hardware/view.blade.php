@@ -899,8 +899,16 @@
                                 @endif
 
                                 @if  ($snipeSettings->qr_code=='1')
-                                    <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail pull-right" style="height: 100px; width: 100px; margin-right: 10px;" alt="QR code for {{ $asset->getDisplayNameAttribute() }}">
+                                    @include('partials.zebra')
+                                    {{-- <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail pull-right" style="height: 100px; width: 100px; margin-right: 10px;" alt="QR code for {{ $asset->getDisplayNameAttribute() }}"> --}}
                                 @endif
+
+                                {{--Map Image --}}
+                                <div class="col-md-12" style="padding-top: 5px;" id="mapImageDiv" >
+                                    <a href="/img/blank.png" data-toggle="lightbox" id="mapImagelink">
+                                        <img src="/img/blank.png" class="img-thumbnail" alt="map" id="mapImage" style="">
+                                    </a>
+                                </div>
 
                                 @if (($asset->assignedTo) && ($asset->deleted_at==''))
                                     <div style="text-align: left">
@@ -959,15 +967,6 @@
                                     </div>
 
                                 @endif
-
-                                <!--Map Image -->
-                                <div class="text-center col-md-12" style="padding-bottom: 15px;">
-                                    <a href="/img/blank.png" data-toggle="lightbox" id="mapImagelink">
-                                        <img src="/img/blank.png" class="assetimg img-responsive" alt="map" id="mapImage" style="display:none">
-                                    </a>
-                                </div>
-                                
-                                @include('partials.zebra')
 
                             </div> <!-- div.col-md-4 -->
                         </div><!-- /row -->
@@ -1425,9 +1424,6 @@
             $(this).find(".modal-body").text(content);
             $(this).find(".modal-header").text(title);
         });
-
-        console.log("test sawpit changes");
-
 
     </script>
     @include ('partials.bootstrap-table')

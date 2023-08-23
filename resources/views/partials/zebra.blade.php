@@ -2,10 +2,11 @@
 
 $qr = config('app.url');
 $qr = "$qr/hardware/$asset->id";
-//H needs mag 5 and Q needs mag 7 to fill empty space
+// errorCorrection=H (highest reliability) or Q (high reliability)  input mode A
+$qrMode = "QA";
+//H needs mag 5 and Q needs mag 6 to fill empty space
 //TODO: figure out maxium length of qr, make qrMag smaller if qr code string is too long
-$qrMag = "5";
-$qrMode = "HA";
+$qrMag = "6";
 
 $topLine = $asset->model->name;  // "DF-8x18x24"
 //moving FOHC to the end of the grade line since it makes the top line too long for 4x2 label
@@ -14,24 +15,21 @@ $topLine = str_replace('-FOHC-','-',$topLine);
 $topLine = str_replace('-HC-','-',$topLine);
 $topLineLen = strlen($topLine);
 
-
 //font size 90 can fit 12 chars
-//font size 80 can fit 14 chars
-//font size 70 can fit 16 chars
 $topLineFont = "A,90";
 if ($topLineLen<12){
     $topLine = str_pad($topLine, 13, " ", STR_PAD_BOTH);
 }
 if ($topLineLen>12){
-    $topLineFont = "A,90";
-}
-if ($topLineLen>14){
+    //font size 80 can fit 14 chars
     $topLineFont = "A,80";
 }
-if ($topLineLen>16){
+if ($topLineLen>14){
+    //font size 70 can fit 16 chars
     $topLineFont = "A,70";
 }
-if ($topLineLen>18){
+if ($topLineLen>16){
+    //font size 60 can fit 18 chars
     $topLineFont = "A,60";
 }
 
@@ -49,6 +47,7 @@ $con = $asset->_snipeit_condition_9;
 $bc = $asset->asset_tag;//$asset->serials[1];
 $barcodeWidth = "4";
 $barcodeRatio = "3";
+
 //width 4 fits up to 15 chars    0123456789ABCDE
 if (strlen($bc)>15){
     $barcodeWidth = "3";   
@@ -59,7 +58,7 @@ if((strlen($bc)<15)){
 
 $zpl = <<<EOD
 ^XA
-^FX Top section with model info
+^FX Top section, designed for 203 dpi (8dpmm)
 ^CF$topLineFont
 ^FO5,5^FD$topLine^FS
 ^FX order info
@@ -70,7 +69,7 @@ $zpl = <<<EOD
 ^FO220,195^FD  GR: $gr^FS
 ^FO220,225^FD CON: $con^FS
 ^FX QR code mag=6, errorCorrection=H (highest reliability) or Q (high reliability)  input mode A
-^FX QR H needs mag 6 and Q needs mag 7 to fill empty space
+^FX Q H needs mag 6 and Q needs mag 7 to fill empty space
 ^FO10,100^BQ,,$qrMag^FD$qrMode,$qr^FS
 ^FX right staple box
 ^CFA,15
@@ -88,18 +87,23 @@ EOD;
 $lines = explode("\n",$zpl);
 $a = array_filter($lines, function ($x) { return ! str_starts_with($x,'^FX'); });
 $singleLineZpl = rawUrlencode(implode('',$a));  //use rawUrlencode so spaces do not get changed into + 
-
-$apiUrl = "https://api.labelary.com/v1/printers/8dpmm/labels/4x2/0/$singleLineZpl";
-$exampleUrl = "/img/exampleZebraLabel4x2.png"
+$dpmm = "8dpmm"; //8dpmm is 203dpi, can also use 12 dpmm (300 dpi) 
+$apiUrl = "https://api.labelary.com/v1/printers/$dpmm/labels/4x2/0/$singleLineZpl";
+$exampleUrl = "/img/exampleZebraLabel4x2.png";
+//api.labelary.com makes a png with 2px per dot so the png is 812x406 
+//The factors of 406 are 1, 2, 7, 14, 29, 58, 203, 406. Pick a factor so preview is not blurry
+$padding = 0;
+$height = 203+($padding*2);
+$width = 2*$height;
+//height="{{$height}}" width="{{$width}}" 
+//border:1px solid #ddd;border-radius:4px"
 ?>
 
-
-<div class="text-center col-md-12" style="padding-bottom: 15px;">
-    <a href="{{$apiUrl}}" data-toggle="lightbox" id="labelImageLink">
-        <img src="{{$apiUrl}}" class="assetimg img-responsive" alt="label" id="mapImage" style="max-height: 128px;">
-    </a>
-    <pre style="text-align:left;display:none">
+<div class="col-md-12" style="padding-top: 5px;" >
+<img src="{{$apiUrl}}" class="img-thumbnail" 
+alt="Zebra Label preview for {{ $asset->getDisplayNameAttribute() }}">
+{{--hidden pre tag for debugging zpl--}}  
+<pre style="text-align:left;display:none">
 {{$zpl}}
-    </pre>
+</pre>
 </div>
-

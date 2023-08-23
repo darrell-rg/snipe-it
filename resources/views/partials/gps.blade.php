@@ -101,13 +101,16 @@
             var lastGpsString = '{{$asset->_snipeit_lastgpsping_16}}';
 
             //only show map if we have gps data
-            if (lastGpsString.length > 4 )
-            {
+            if (lastGpsString.length > 4 ){
                 const map_el = document.getElementById("mapImage");
                 const mapImagelink_el = document.getElementById("mapImagelink");
                 map_el.src = "/img/maps/"+grid+".webp";
                 mapImagelink_el.href = map_el.src;
-                map_el.style = 'max-height:640px;';
+                // map_el.style = 'max-height:640px;';
+                $("#mapImageDiv").show();
+            }
+            else{
+                $("#mapImageDiv").hide();
             }
 
         @endif
