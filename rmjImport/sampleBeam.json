@@ -57,7 +57,8 @@
                                        "field_format": "NUMERIC",
                                        "value": "6"},
                          "LastGpsPing": {   "element": "text",
-                                            "field": "_snipeit_lastgpsping_16",
+                                            "field": "_snipeit_last_gps_16
+",
                                             "field_format": "regex:/^@[3940]{2}\\.\\d+,-\\d{3}.\\d+$/",
                                             "value": ""},
                          "Length": {   "element": "text",

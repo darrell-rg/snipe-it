@@ -231,7 +231,8 @@ CREATE TABLE `assets` (
   `_snipeit_dryness_today_13` text DEFAULT NULL,
   `_snipeit_date_used_14` text DEFAULT NULL,
   `_snipeit_project_15` text DEFAULT NULL,
-  `_snipeit_lastgpsping_16` text DEFAULT NULL,
+  `_snipeit_last_gps_16
+` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `assets_rtd_location_id_index` (`rtd_location_id`),
   KEY `assets_assigned_type_assigned_to_index` (`assigned_type`,`assigned_to`),
@@ -539,7 +540,8 @@ INSERT INTO `custom_fields` VALUES
 (13,'Dryness Today','','text','2023-08-16 18:09:22','2023-08-16 18:09:22',NULL,NULL,0,'_snipeit_dryness_today_13',NULL,0,0,1,1,0),
 (14,'Date Used','date','text','2023-08-16 18:12:29','2023-08-16 18:12:29',NULL,NULL,0,'_snipeit_date_used_14',NULL,0,0,0,1,1),
 (15,'Project','','text','2023-08-16 19:10:05','2023-08-16 19:10:05',NULL,NULL,0,'_snipeit_project_15','Project code this beam was used for',0,0,0,0,0),
-(16,'LastGpsPing','regex:/^@[3940]{2}\\.\\d+,-\\d{3}.\\d+$/','text','2023-08-18 18:13:52','2023-08-18 18:13:52',NULL,NULL,0,'_snipeit_lastgpsping_16','Where RFID last seen, ex @39.9898241,-105.0751819',0,0,0,0,0);
+(16,'LastGpsPing','regex:/^@[3940]{2}\\.\\d+,-\\d{3}.\\d+$/','text','2023-08-18 18:13:52','2023-08-18 18:13:52',NULL,NULL,0,'_snipeit_last_gps_16
+','Where RFID last seen, ex @39.9898241,-105.0751819',0,0,0,0,0);
 /*!40000 ALTER TABLE `custom_fields` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `custom_fieldsets`;

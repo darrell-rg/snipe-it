@@ -82,7 +82,7 @@
 
 
     @if (isset($addClickToSetGpsLink))
-        noteSelector = "#_snipeit_lastgpsping_16";
+        noteSelector = "#_snipeit_last_gps_16";
         showAccuracy = false;
         document.querySelector(noteSelector+" + p").addEventListener("click", requestPosition);
     @endif
@@ -98,7 +98,7 @@
             var index = {{$asset->id}};
             grid = goodMapGrids[index = index % 10];
 
-            var lastGpsString = '{{$asset->_snipeit_lastgpsping_16}}';
+            var lastGpsString = '{{$asset->_snipeit_last_gps_16}}';
 
             //only show map if we have gps data
             if (lastGpsString.length > 4 ){
