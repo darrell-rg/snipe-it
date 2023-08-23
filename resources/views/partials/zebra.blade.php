@@ -1,6 +1,12 @@
 <?php
 
-$qr = "rmj.sawpit.app/hardware/$asset->id";
+$qr = config('app.url');
+$qr = "$qr/hardware/$asset->id";
+//H needs mag 5 and Q needs mag 7 to fill empty space
+//TODO: figure out maxium length of qr, make qrMag smaller if qr code string is too long
+$qrMag = "5";
+$qrMode = "HA";
+
 $topLine = $asset->model->name;  // "DF-8x18x24"
 //moving FOHC to the end of the grade line since it makes the top line too long for 4x2 label
 $topLine = str_replace(' ','',$topLine);
@@ -65,7 +71,7 @@ $zpl = <<<EOD
 ^FO220,225^FD CON: $con^FS
 ^FX QR code mag=6, errorCorrection=H (highest reliability) or Q (high reliability)  input mode A
 ^FX QR H needs mag 6 and Q needs mag 7 to fill empty space
-^FO10,100^BQ,,6^FDHA,$qr^FS
+^FO10,100^BQ,,$qrMag^FD$qrMode,$qr^FS
 ^FX right staple box
 ^CFA,15
 ^FO620,95^GB190,190,3^FS
