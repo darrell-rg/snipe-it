@@ -5,7 +5,7 @@ return array(
     'create'				=> 'Create Asset Model',
     'created_at' 			=> 'Created at',
     'eol'	 				=> 'EOL',
-    'modelnumber'   		=> 'Boxed Heart', //will be BH or FOHC
+    'modelnumber'   		=> 'Heartwood', //will be BHC or FOHC
     'name'      			=> 'Summary',
     'numassets' 			=> 'Assets',
     'title'					=> 'Asset Models',

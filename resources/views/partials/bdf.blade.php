@@ -27,8 +27,25 @@ function calcBDF(){
 
     if(bdf > 0)
         bdf_el.value = bdf;
+    return bdf;
+}
+
+
+function calcName(){
+    const height_el = document.getElementById("_snipeit_height_5");
+    const width_el = document.getElementById("_snipeit_width_4");
+    const length_el = document.getElementById("_snipeit_length_7");
+    const name_el = document.getElementById("name");  // will be WxHxL
+
+    const l = document.getElementById("_snipeit_length_7").value;
+    const h = document.getElementById("_snipeit_height_5").value;
+    const w = document.getElementById("_snipeit_width_4").value;
+
     // Use WxHxL to match Hundegger
-    name_el.value = [width_el.value,height_el.value,length_el.value].join("x");
+    // const name = [round2(w),round2(h),round2(l)].join("x");
+    const name = [w,h,l].join("x");
+    name_el.value = name;
+    return name;
 }
 
 function calcPurchaseCost(){
@@ -40,11 +57,16 @@ function calcPurchaseCost(){
 
     if(price > 0)
         purchase_cost_el.value = price;
+    return price;
 }
 
 
 $( "#_snipeit_length_7,#_snipeit_height_5,#_snipeit_width_4" ).on( "change", function() {
     calcBDF()
+} );
+
+$( "#_snipeit_length_7,#_snipeit_height_5,#_snipeit_width_4" ).on( "change", function() {
+    calcName()
 } );
 
 $( "#_snipeit_bdf_cost_10,#_snipeit_freight_11,#_snipeit_bdf_8" ).on( "change", function() {

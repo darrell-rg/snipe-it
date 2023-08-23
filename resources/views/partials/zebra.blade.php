@@ -7,12 +7,10 @@ $qrMode = "QA";
 //H needs mag 5 and Q needs mag 6 to fill empty space
 //TODO: figure out maxium length of qr, make qrMag smaller if qr code string is too long
 $qrMag = "6";
-
-$topLine = $asset->model->name;  // "DF-8x18x24"
+$modelName = explode("-",$asset->model->name);
+$topLine = $modelName[0].'-'.$asset->name;  // "DF-8x18x23"
 //moving FOHC to the end of the grade line since it makes the top line too long for 4x2 label
-$topLine = str_replace(' ','',$topLine);
-$topLine = str_replace('-FOHC-','-',$topLine);
-$topLine = str_replace('-HC-','-',$topLine);
+
 $topLineLen = strlen($topLine);
 
 //font size 90 can fit 12 chars
@@ -36,18 +34,21 @@ if ($topLineLen>16){
 $sup = $asset->supplier->name;
 $or = $asset->order_number;
 $dt = Helper::getFormattedDateObject($asset->purchase_date, 'date', false);//"2022-14-07";
-$gr = $asset->_snipeit_grade_2;  
-if (str_contains($asset->model->name,'FOHC')) {
-    $gr = "$gr FOHC";
-}
-else {
-    $gr = "$gr HC";
-}
+$gr = $asset->_snipeit_grade_2 .' '. $asset->model->model_no; //model_no is BHC or FOHC
 $con = $asset->_snipeit_condition_9;
 $bc = $asset->asset_tag;//$asset->serials[1];
 $barcodeWidth = "4";
 $barcodeRatio = "3";
 
+
+// dr = row['Dryness']
+//     if(dr.startswith('G')):
+//         dr = 'GR'
+//     if(dr.startswith('A')):
+//         dr = 'AD'
+//     if(dr.startswith('K')):
+//         dr = 'KD'
+//     return dr
 //width 4 fits up to 15 chars    0123456789ABCDE
 if (strlen($bc)>15){
     $barcodeWidth = "3";   

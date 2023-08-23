@@ -32,3 +32,5 @@ git remote set-url origin https://github.com/darrell-rg/snipe-it.git
 cd /var/www/html/snipeit
 git config --global user.email "darrell@sawpit.app"
 git config --global user.name "Darrell Taylor"
+
+# set memory_limit in /etc/php/8.1/apache2/php.ini to 512

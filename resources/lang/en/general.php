@@ -187,7 +187,7 @@ return [
     'markdown'				=> 'This field allows <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
     'min_amt'				=> 'Min. QTY',
     'min_amt_help'          => 'Minimum number of items that should be available before an alert gets triggered. Leave Min. QTY blank if you do not want to receive alerts for low inventory.',
-    'model_no'				=> 'Boxed Heart',
+    'model_no'				=> 'Heartwood', //will be BHC or FOHC
     'months'				=> 'months',
     'moreinfo'				=> 'More Info',
     'name'					=> 'Name',
