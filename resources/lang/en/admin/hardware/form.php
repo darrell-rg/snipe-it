@@ -36,7 +36,7 @@ return [
     'qr'				=> 'QR Code',
     'requestable'		=> 'Users may request this asset',
     'select_statustype'	=> 'Select Status Type',
-    'serial'			=> 'Serial',
+    'serial'			=> 'Serial (RFID)',
     'status'			=> 'Status',
     'tag'				=> 'Asset Tag',
     'update'			=> 'Asset Update',

@@ -28,7 +28,7 @@ return [
     'asset_category'            => 'Category',
     'asset_manufacturer'        => 'Manufacturer',
     'asset_model'               => 'Model',
-    'asset_serial'              => 'Serial',
+    'asset_serial'              => 'Serial (RFID)',
     'asset_location'            => 'Location',
     'asset_checked_out'         => 'Checked Out',
     'asset_expected_checkin'    => 'Expected Checkin',

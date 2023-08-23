@@ -47,7 +47,7 @@ return [
     'bulk_actions'          => 'Bulk Actions',
     'bulk_checkin_delete'   => 'Bulk Checkin / Delete Users',
     'byod'                  => 'RFID',
-    'byod_help'             => 'This beam has a RFID label',
+    'byod_help'             => 'The RFID tag has been verifed to work',
     'bystatus'              => 'by Status',
     'cancel'  				=> 'Cancel',
     'categories'			=> 'Categories',

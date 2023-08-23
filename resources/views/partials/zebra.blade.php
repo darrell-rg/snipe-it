@@ -34,7 +34,7 @@ if ($topLineLen>16){
 $sup = $asset->supplier->name;
 $or = $asset->order_number;
 $dt = Helper::getFormattedDateObject($asset->purchase_date, 'date', false);//"2022-14-07";
-$gr = $asset->_snipeit_grade_2 .' '. $asset->model->model_no; //model_no is BHC or FOHC
+$gr = $asset->_snipeit_grade_2 .' '. $asset->model->model_number; //model_no is BHC or FOHC
 $con = $asset->_snipeit_condition_9;
 $bc = $asset->asset_tag;//$asset->serials[1];
 $barcodeWidth = "4";

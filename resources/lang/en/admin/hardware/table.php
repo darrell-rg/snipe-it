@@ -17,7 +17,7 @@ return [
     'location' 		=> 'Location',
     'purchase_cost'	=> 'Cost',
     'purchase_date'	=> 'Purchased',
-    'serial'   		=> 'Serial',
+    'serial'   		=> 'Serial(RFID)',
     'status'   		=> 'Status',
     'title'      	=> 'Asset ',
     'image'		    => 'Device Image',

@@ -61,16 +61,22 @@ function calcPurchaseCost(){
 }
 
 
-$( "#_snipeit_length_7,#_snipeit_height_5,#_snipeit_width_4" ).on( "change", function() {
-    calcBDF()
-} );
+function autoSetModel(){
+    //find or create the right model for this size of timber
+    //TBD
+}
+
 
 $( "#_snipeit_length_7,#_snipeit_height_5,#_snipeit_width_4" ).on( "change", function() {
-    calcName()
+    calcBDF();
+    calcName();
+    calcPurchaseCost();
+    autoSetModel();
 } );
+
 
 $( "#_snipeit_bdf_cost_10,#_snipeit_freight_11,#_snipeit_bdf_8" ).on( "change", function() {
-    calcPurchaseCost()
+    calcPurchaseCost();
 } );
 
 
