@@ -98,3 +98,29 @@ Monthly recurring costs estimates:
 
 
     Total Monthly:  $2600 
+
+
+## Implenting:
+
+1. Software 
+    Import existing inv from spreadsheets
+    - should model include length
+
+1. Hardware
+    - set up computer carts with printer, barcode scanner, rfid reader
+
+1. Define locations,  set out labled orange cones 
+1. For each beam in yard, find imported
+    - find the imported record, or create a new record
+    - print a new RFID label
+    - attach new label
+    - set location
+
+
+1. use Bulk audit to move beams location
+1. use bulk edit to set status
+
+
+
+
+1. Set up computer carts
