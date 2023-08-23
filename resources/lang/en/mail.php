@@ -9,7 +9,7 @@ return [
     'additional_notes' => 'Additional Notes:',
     'admin_has_created' => 'An administrator has created an account for you on the :web website.',
     'asset' => 'Asset:',
-    'asset_name' => 'Asset Name:',
+    'asset_name' => 'WxHxL', //dimensions in WxHxL to match Hundegger',
     'asset_requested' => 'Asset requested',
     'asset_tag' => 'Asset Tag',
     'assigned_to' => 'Assigned To',

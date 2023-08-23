@@ -27,8 +27,8 @@ function calcBDF(){
 
     if(bdf > 0)
         bdf_el.value = bdf;
-
-    name_el.value = [height_el.value,width_el.value,length_el.value].join("x");
+    // Use WxHxL to match Hundegger
+    name_el.value = [width_el.value,height_el.value,length_el.value].join("x");
 }
 
 function calcPurchaseCost(){

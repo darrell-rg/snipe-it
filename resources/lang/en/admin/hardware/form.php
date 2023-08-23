@@ -30,7 +30,7 @@ return [
     'manufacturer'		=> 'Manufacturer',
     'model'				=> 'Model',
     'months'			=> 'months',
-    'name'				=> 'Asset Name',
+    'name'				=> 'WxHxL',//dimensions to match hundegger
     'notes'				=> 'Notes',
     'order'				=> 'Order Number',
     'qr'				=> 'QR Code',
