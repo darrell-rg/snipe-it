@@ -32,8 +32,10 @@
     }
     function handlePositionError(e) {
         const mapLink = document.querySelector(mapLinkSelector);
-        mapLink.href = "";
-        mapLink.textContent = `GPS Error: ${E}`;
+        if(mapLink){
+            mapLink.href = "";
+             mapLink.textContent = `GPS Error: ${E}`;
+        }
         console.log(e);
     }
     function requestPosition(){

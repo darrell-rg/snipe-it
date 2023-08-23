@@ -966,6 +966,9 @@
                                         <img src="/img/blank.png" class="assetimg img-responsive" alt="map" id="mapImage" style="display:none">
                                     </a>
                                 </div>
+                                
+                                @include('partials.zebra')
+
                             </div> <!-- div.col-md-4 -->
                         </div><!-- /row -->
                     </div><!-- /.tab-pane asset details -->
