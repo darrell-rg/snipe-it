@@ -13,7 +13,7 @@ $topLine = $modelName[0].'-'.$asset->name;  // "DF-8x18x23"
 
 $topLineLen = strlen($topLine);
 
-//font size 90 can fit 12 chars
+//font A size 90 can fit 12 chars
 $topLineFont = "A,90";
 if ($topLineLen<12){
     $topLine = str_pad($topLine, 13, " ", STR_PAD_BOTH);
@@ -104,7 +104,10 @@ $width = 2*$height;
 <img src="{{$apiUrl}}" class="img-thumbnail" 
 alt="Zebra Label preview for {{ $asset->getDisplayNameAttribute() }}">
 {{--hidden pre tag for debugging zpl--}}  
-<pre style="text-align:left;display:none">
+@if(env('APP_ENV')=='development') 
+<pre style="text-align:left">
 {{$zpl}}
 </pre>
+@endif
+
 </div>

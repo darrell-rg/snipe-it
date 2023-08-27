@@ -82,9 +82,13 @@
 
 
     @if (isset($addClickToSetGpsLink))
+        //add link below custom field in create/edit
         noteSelector = "#_snipeit_last_gps_16";
         showAccuracy = false;
-        document.querySelector(noteSelector+" + p").addEventListener("click", requestPosition);
+        let el = document.querySelector(noteSelector+" + p");
+        if(el){
+            el.addEventListener("click", requestPosition);
+        }
     @endif
 
 

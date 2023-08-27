@@ -11,6 +11,9 @@
                     {{ $snipeSettings->default_currency }}
                 @endif
             </span>
+            <span class="input-group-addon" onclick=calcPurchaseCost() title='click to cacluate from BDF price'>
+                <i class="fa fa-calculator" aria-hidden="true"></i>
+            </span>
         </div>
         <div class="col-md-9" style="padding-left: 0px;">
             {!! $errors->first('purchase_cost', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
