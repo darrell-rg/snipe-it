@@ -17,6 +17,16 @@
     </div>
 </div>
 
+<div class="form-group {{ $errors->has('length') ? ' has-error' : '' }}">
+    <label for="length" class="col-md-3 control-label">{{ trans('general.length') }}</label>
+    <div class="col-md-7 required">
+        <div class="col-md-2" style="padding-left:0px">
+            <input class="form-control" type="text" name="length" id="length" value="{{ Request::old('length', $item->length) }}" />
+        </div>
+        {!! $errors->first('length', '<span class="alert-msg"><i class="fas fa-times"></i> :message</span>') !!}
+    </div>
+</div>
+
 <input type="hidden" name="pivot_id" value="{{$item->id}}">
 {{-- <input class="form-control" type="text" name="quantity" id="quantity" value="{{ Request::old('quantity', $item->quantity) }}" /> --}}
 

@@ -805,12 +805,16 @@
                                         <div class="col-md-6">
                                             {{ Form::open([
                                                       'method' => 'POST',
-                                                      'route' => ['hardware/bulkedit'],
+                                                      'route' => ['print_zpl/hardware'],
                                                       'class' => 'form-inline',
                                                        'id' => 'bulkForm']) }}
                                                 <input type="hidden" name="bulk_actions" value="labels" />
+                                                <input type="hidden" name="zpl_printer_address" value="{{$settings->zpl_printer_address}}" />
                                                 <input type="hidden" name="ids[{{$asset->id}}]" value="{{ $asset->id }}" />
-                                                <button class="btn btn-sm btn-default" id="bulkEdit" ><i class="fas fa-barcode" aria-hidden="true"></i> {{ trans_choice('button.generate_labels', 1) }}</button>
+                                                <button class="btn btn-sm btn-default" id="bulkEdit" >
+                                                    <i class="fas fa-barcode" aria-hidden="true"></i> 
+                                                    Print Label To: {{$settings->zpl_printer_address}}
+                                                </button>
 
                                             {{ Form::close() }}
 
@@ -898,17 +902,21 @@
                                     </div>
                                 @endif
 
-                                @if  ($snipeSettings->qr_code=='1')
-                                    @include('partials.zebra')
-                                    {{-- <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail pull-right" style="height: 100px; width: 100px; margin-right: 10px;" alt="QR code for {{ $asset->getDisplayNameAttribute() }}"> --}}
-                                @endif
 
                                 {{--Map Image --}}
                                 <div class="col-md-12" style="padding-top: 5px;" id="mapImageDiv" >
-                                    <a href="/img/blank.png" data-toggle="lightbox" id="mapImagelink">
-                                        <img src="/img/blank.png" class="img-thumbnail" alt="map" id="mapImage" style="">
-                                    </a>
+                                    {{-- <a href="/img/blank.png" data-toggle="lightbox" id="mapImagelink">
+                                        <img src="/img/blank.png" class="img-thumbnail" alt="map" id="mapImage" style="max-height:600px">
+                                    </a> --}}
+                                    <div id="map" style="width: 100%; height: 400px"></div>
+                                    <div id="popup"></div>
                                 </div>
+
+                                @if  ($snipeSettings->qr_code=='1')
+                                @include('partials.zebra')
+                                {{-- <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail pull-right" style="height: 100px; width: 100px; margin-right: 10px;" alt="QR code for {{ $asset->getDisplayNameAttribute() }}"> --}}
+                                @endif
+
 
                                 @if (($asset->assignedTo) && ($asset->deleted_at==''))
                                     <div style="text-align: left">
@@ -1425,8 +1433,9 @@
             $(this).find(".modal-header").text(title);
         });
 
+
     </script>
     @include ('partials.bootstrap-table')
 
-    @include('partials.gps', [ 'loadMap'=>'true'])
+    @include('partials.gps', [ 'loadMap'=>'true']) 
 @stop

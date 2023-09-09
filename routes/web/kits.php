@@ -77,4 +77,12 @@ Route::group(['prefix' => 'kits/{kit_id}', 'middleware' => ['auth']], function (
     Route::post('checkout',
         [Kits\CheckoutKitController::class, 'store']
     )->name('kits.checkout.store');
+
+    Route::get('truckload',
+    [Kits\CheckoutKitController::class, 'showTruckload']
+    )->name('kits.truckload.show');
+
+    Route::post('truckload',
+        [Kits\CheckoutKitController::class, 'storeTruckload']
+    )->name('kits.truckload.store');
 }); // kits

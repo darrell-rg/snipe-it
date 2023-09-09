@@ -42,7 +42,9 @@ Push your changes to this branch and run upgrade.php, see the [upgrading documen
 
 ## RFID
 
-RFID support plan.
+RFID support plan.  USA RFID is 902-928 MHz  	52 channels of 500 kHz	4 W EIRP  https://rfid4u.com/rfid-regulations/
+
+915mhz center freq is 33cm or 13 inches
 
 The downside of RFID vs barcode is that with RFID you never know exactly which beam you scanned.  You could point it at one beam and actually scan a different beam in the stack. The barcode laser ensures the worker knows exactly which beam was scanned.    For workers doing manual scans, barcode is better.
    
@@ -105,6 +107,7 @@ Monthly recurring costs estimates:
 1. Software 
     Import existing inv from spreadsheets
     - should model include length
+    - create fast entry page for when a truck comes in 
 
 1. Hardware
     - set up computer carts with printer, barcode scanner, rfid reader

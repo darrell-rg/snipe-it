@@ -41,7 +41,26 @@ class CheckoutKitController extends Controller
 
         $kit = PredefinedKit::findOrFail($kit_id);
 
-        return view('kits/checkout')->with('kit', $kit);
+        $item = new Asset; //empty asset to hold form data 
+
+        return view('kits/checkout')->with('kit', $kit)->with('item', $item);
+    }
+
+
+    /**
+     * used to create assets from truckload
+     *
+     * @return View View to checkout
+     */
+    public function showTruckload($kit_id)
+    {
+        $this->authorize('checkout', Asset::class);
+
+        $kit = PredefinedKit::findOrFail($kit_id);
+
+        $item = new Asset; //empty asset to hold form data 
+
+        return view('kits/truckload')->with('kit', $kit)->with('item', $item);
     }
 
     /**
@@ -51,6 +70,34 @@ class CheckoutKitController extends Controller
      * @return Redirect
      */
     public function store(Request $request, $kit_id)
+    {
+        $user_id = e($request->get('user_id'));
+        if (is_null($user = User::find($user_id))) {
+            return redirect()->back()->with('error', trans('admin/users/message.user_not_found'));
+        }
+
+        $kit = new PredefinedKit();
+        $kit->id = $kit_id;
+
+        $checkout_result = $this->kitService->checkout($request, $kit, $user);
+        if (Arr::has($checkout_result, 'errors') && count($checkout_result['errors']) > 0) {
+            return redirect()->back()->with('error', trans('general.checkout_error'))->with('error_messages', $checkout_result['errors']);
+        }
+
+        return redirect()->back()->with('success', trans('general.checkout_success'))
+            ->with('assets', Arr::get($checkout_result, 'assets', null))
+            ->with('accessories', Arr::get($checkout_result, 'accessories', null))
+            ->with('consumables', Arr::get($checkout_result, 'consumables', null));
+    }
+
+
+    /**
+     * Create assets from truckload data
+     *
+     * @author [D. Minaev.] [<dmitriy.minaev.v@gmail.com>]
+     * @return Redirect
+     */
+    public function storeTruckload(Request $request, $kit_id)
     {
         $user_id = e($request->get('user_id'));
         if (is_null($user = User::find($user_id))) {

@@ -769,6 +769,8 @@ class SettingsController extends Controller
         $setting->alt_barcode_enabled = $request->input('alt_barcode_enabled', '0');
         $setting->barcode_type = $request->input('barcode_type');
         $setting->qr_text = $request->input('qr_text');
+        $setting->use_zpl = $request->input('use_zpl', '0');
+        $setting->zpl_printer_address = $request->input('zpl_printer_address');
 
         if ($setting->save()) {
             return redirect()->route('settings.index')

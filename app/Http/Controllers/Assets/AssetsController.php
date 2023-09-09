@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Assets;
 
 use App\Helpers\Helper;
+use App\Helpers\ZPLHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
 use App\Models\Actionlog;
@@ -541,6 +542,88 @@ class AssetsController extends Controller
                 }
             }
         }
+    }
+
+    public function getZplPreview($assetId = null)
+    {
+        $settings = Setting::getSettings();
+        $asset = Asset::find($assetId);
+        $barcode_file = public_path().'/uploads/barcodes/zpl4x6label'.str_slug($asset->asset_tag).'.png';
+
+        if (isset($asset->id, $asset->asset_tag)) {
+
+            $png_date = 0;
+            if (file_exists($barcode_file))
+                $png_date = filemtime($barcode_file);
+
+            // use cached version of label if it is newer then the asset
+            if ($png_date && $png_date > $asset->updated_at->timestamp) {
+                $header = ['Content-type' => 'image/png'];
+                return response()->file($barcode_file, $header);
+            } else {
+                // fetch a label png from labelary.com
+                try {
+                    $zpl = ZPLHelper::getPreviewZpl($asset);
+                    //$zpl = "^xa^cfa,50^fo100,100^fdHello World^fs^xz";
+                    \Log::debug('sending this zpl'.$zpl);
+                    $curl = curl_init();
+                    // adjust print density (8dpmm), label width (4 inches), label height (6 inches), and label index (0) as necessary
+                    curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/");
+                    curl_setopt($curl, CURLOPT_POST, TRUE);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                    curl_setopt($curl, CURLOPT_HTTPHEADER, array("X-Rotation: 90","X-Quality: Bitonal")); // 
+                    $result = curl_exec($curl);
+                    
+                    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
+                        file_put_contents($barcode_file, $result);
+                    } else {
+                        \Log::error("Error: $result");
+                    }
+                    curl_close($curl);
+
+                    $header = ['Content-type' => 'image/png'];
+                    return response()->file($barcode_file, $header);
+
+
+                } catch (\Exception $e) {
+                    \Log::warning('Unable to get label preview');
+
+                    return response(file_get_contents(public_path('uploads/barcodes/invalid_barcode.gif')))->header('Content-type', 'image/gif');
+                }
+            }
+        }
+    }
+
+    /**
+     * Print ZPL label
+     *
+     * @return Response
+     */
+    public function printZplLabels(Request $request)
+    {
+
+        $asset_ids = array_values(array_unique($request->input('ids')));
+        $zpl_printer_address = $request->input('zpl_printer_address');
+        $result = 'Messages From Printer:';
+        
+        foreach($asset_ids as $assetId)
+        {
+            $asset = Asset::find($assetId);
+
+            if (isset($asset->id, $asset->asset_tag, $zpl_printer_address)) {
+                //$username = "User: ".Auth::user()->first_name." ".Auth::user()->last_name ;
+                $username = "User: ".Auth::user()->username;
+                $result .= "\n 1:" . ZPLHelper::printZpl($asset,$username,$zpl_printer_address);
+                break;
+            }
+            else{
+                $result .=  "\n" . "Error printing ".implode(',',$asset_ids)." to ".$zpl_printer_address;
+            }
+            
+        }
+
+        return response($result);
     }
 
     /**

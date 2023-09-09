@@ -14,14 +14,14 @@ function round2(x) {
 
 function calcBDF(){
     const bdf_el = document.getElementById("_snipeit_bdf_8");
-    const height_el = document.getElementById("_snipeit_height_5");
-    const width_el = document.getElementById("_snipeit_width_4");
+    const height_el = document.getElementById("_snipeit_width_5");
+    const width_el = document.getElementById("_snipeit_thickness_4");
     const length_el = document.getElementById("_snipeit_length_7");
     const name_el = document.getElementById("name");
 
     const l = parseFloat(document.getElementById("_snipeit_length_7").value);
-    const h = parseFloat(document.getElementById("_snipeit_height_5").value); //thickness
-    const w = parseFloat(document.getElementById("_snipeit_width_4").value);
+    const h = parseFloat(document.getElementById("_snipeit_width_5").value); //thickness
+    const w = parseFloat(document.getElementById("_snipeit_thickness_4").value);
 
     const bdf = round2(((w*h)/12) * l);
 
@@ -32,14 +32,14 @@ function calcBDF(){
 
 
 function calcName(){
-    const height_el = document.getElementById("_snipeit_height_5");
-    const width_el = document.getElementById("_snipeit_width_4");
+    const height_el = document.getElementById("_snipeit_width_5");
+    const width_el = document.getElementById("_snipeit_thickness_4");
     const length_el = document.getElementById("_snipeit_length_7");
     const name_el = document.getElementById("name");  // will be WxHxL
 
     const l = document.getElementById("_snipeit_length_7").value;
-    const h = document.getElementById("_snipeit_height_5").value;
-    const w = document.getElementById("_snipeit_width_4").value;
+    const h = document.getElementById("_snipeit_width_5").value;
+    const w = document.getElementById("_snipeit_thickness_4").value;
 
     // Use WxHxL to match Hundegger
     // const name = [round2(w),round2(h),round2(l)].join("x");
@@ -67,7 +67,7 @@ function autoSetModel(){
 }
 
 
-$( "#_snipeit_length_7,#_snipeit_height_5,#_snipeit_width_4" ).on( "change", function() {
+$( "#_snipeit_length_7,#_snipeit_width_5,#_snipeit_thickness_4" ).on( "change", function() {
     calcBDF();
     calcName();
     calcPurchaseCost();

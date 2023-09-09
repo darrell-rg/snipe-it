@@ -93,28 +93,23 @@
 
 
     @if (isset($loadMap))
-        const goodMapGrids="B4,C1,C6,C7,C8,CA,CG,CH,D2,D3,D4,D5,E2,E3,E4,E5,E6,E9,EC,G5,G8,GA,GB,H1,H6,H7,H8,H9,HA,HB,HC,HD,HE,HF,HG,HL,HI,HH,HJ".split(",")
-        // pick a random map for testing
-        let grid = goodMapGrids[~~(Math.random() * goodMapGrids.length)];
-
         @if($asset->id)
             //devine map from item id
             var index = {{$asset->id}};
-            grid = goodMapGrids[index = index % 10];
-
             var lastGpsString = '{{$asset->_snipeit_last_gps_16}}';
 
             //only show map if we have gps data
             if (lastGpsString.length > 4 ){
-                const map_el = document.getElementById("mapImage");
-                const mapImagelink_el = document.getElementById("mapImagelink");
-                map_el.src = "/img/maps/"+grid+".webp";
-                mapImagelink_el.href = map_el.src;
+                window.lastGpsValue=lastGpsString;
+                // const map_el = document.getElementById("mapImage");
+                // const mapImagelink_el = document.getElementById("mapImagelink");
+                // map_el.src = "/img/maps/"+grid+".webp";
+                // mapImagelink_el.href = map_el.src;
                 // map_el.style = 'max-height:640px;';
-                $("#mapImageDiv").show();
+                // $("#mapImageDiv").show();
             }
             else{
-                $("#mapImageDiv").hide();
+                // $("#mapImageDiv").hide();
             }
 
         @endif
@@ -123,4 +118,6 @@
 
 
 </script>
-
+@if (isset($loadMap))
+    <script type="module" src="/js/build/map.js">
+@endif    

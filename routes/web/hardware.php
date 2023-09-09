@@ -102,6 +102,10 @@ Route::group(
             [AssetsController::class, 'getLabel']
         )->name('label/hardware');
 
+        Route::get('{assetId}/zpl_png',
+            [AssetsController::class, 'getZplPreview']
+        )->name('zpl_png/hardware');
+
         Route::post('{assetId}/clone', 
             [AssetsController::class, 'postCreate']
         );
@@ -149,6 +153,11 @@ Route::group(
         Route::delete('{assetId}/showfile/{fileId}/delete',
             [AssetFilesController::class, 'destroy']
         )->name('delete/assetfile');
+
+        Route::post(
+            'print_zpl',
+            [AssetsController::class, 'printZplLabels']
+        )->name('print_zpl/hardware');
 
         Route::post(
             'bulkedit',

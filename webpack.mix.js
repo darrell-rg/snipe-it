@@ -58,6 +58,14 @@ mix
   )
   .vue();
 
+  mix
+  .js(
+    [
+      "./resources/assets/js/map.js",
+    ],
+    "./public/js/build/map.js" //because of compiling - this does not work very well :(
+  );
+
 // Convert the skins to CSS
 mix.less(
   "./resources/assets/less/skins/skin-blue.less",

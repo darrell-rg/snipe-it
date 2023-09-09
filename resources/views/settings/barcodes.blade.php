@@ -132,6 +132,59 @@
 
                         </div>
 
+                        <div class="form-group">
+                            <div class="col-md-9 col-md-offset-3">
+                                <label class="form-control">
+                                    {{ Form::checkbox('use_zpl', '1', old('use_zpl', $setting->use_zpl),array('aria-label'=>'use_zpl')) }}
+                                     <!-- {{ trans('admin/settings/general.display_qr') }}-->
+                                     Use ZPL printer
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- zebra printer IP -->
+                        <div class="form-group {{ $errors->has('zpl_printer_address') ? 'error' : '' }}">
+                            <div class="col-md-3">
+                                {{ Form::label('zpl_printer_address', "ZPL Printer IP Address") }}
+                            </div>
+                            <div class="col-md-9">
+                                @if ($setting->use_zpl == 1)
+                                    {{ Form::text('zpl_printer_address', Request::old('zpl_printer_address', $setting->zpl_printer_address), array('class' => 'form-control','placeholder' => '192.168.10.77',
+                                    'rel' => 'txtTooltip',
+                                    'title' =>'IP address of ZPL printer. ',
+                                    'data-toggle' =>'tooltip',
+                                    'data-placement'=>'top')) }}
+                                    {!! $errors->first('zpl_printer_address', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                @else
+                                    {{ Form::text('zpl_printer_address', Request::old('zpl_printer_address', $setting->zpl_printer_address), array('class' => 'form-control', 'disabled'=>'disabled','placeholder' => '192.168.10.77')) }}
+                                    <p class="help-block">{{ trans('admin/settings/general.qr_help') }}</p>
+                                @endif
+                            </div>
+                        </div>
+
+
+                        <!-- Webserial Testing -->
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                {{ Form::label('serialtestrow', "Web Serial Test") }}
+                            </div>
+                            <div class="col-md-9" id="serialtestrow">
+                                <a class="btn btn-default btn-sm pull-left" id="serialtest" style="margin-right: 10px;">Serial Test</a>
+                                <span id="serialtesticon"></span>
+                                <span id="serialtestresult"></span>
+                                <span id="serialteststatus"></span>
+                            </div>
+                            <div class="col-md-9 col-md-offset-3">
+                                <div id="serialteststatus-error" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-9 col-md-offset-3">
+                                <p class="help-block">chrome://device-log/</p>
+                                <p class="serialtestdata">chrome://device-log/</p>
+                            </div>
+
+                        </div>
+
+
 
                     </div>
 
@@ -206,6 +259,62 @@
 
             });
         });
+
+    
+async function sendSerialData(){
+    while (port.readable) {
+        const reader = port.readable.getReader();
+        try {
+            while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+                // |reader| has been canceled.
+                break;
+            }
+            // Do something with |value|...
+            }
+        } catch (error) {
+            // Handle |error|...
+        } finally {
+            reader.releaseLock();
+        }
+    }
+}
+
+if ("serial" in navigator) {
+    console.log("The Web Serial API is supported.");
+    $("#serialtestdata").html("The Web Serial API is supported.");
+    navigator.serial.addEventListener("connect", (e) => {
+    // Connect to `e.target` or add it to a list of available ports.
+    });
+
+    navigator.serial.addEventListener("disconnect", (e) => {
+    // Remove `e.target` from the list of available ports.
+    });
+
+    navigator.serial.getPorts().then((ports) => {
+    // Initialize the list of available ports with `ports` on page load.
+    });
+
+    $("#serialtest").click( () => {
+        console.log("Starting Serial test.");
+        const usbVendorId = 0xabcd;
+        navigator.serial
+            .requestPort({ filters: [{ usbVendorId }] })
+            .then((port) => {
+                // Connect to `port` or add it to the list of available ports.
+            })
+            .catch((e) => {
+                // The user didn't select a port.
+            });
+    });
+}
+else{
+    $("#serialtestdata").html("Web Serial API NOT supported in this browser.");
+}
+
+
+
 
     </script>
 

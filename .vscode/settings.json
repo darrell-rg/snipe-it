@@ -4,5 +4,9 @@
         "**/vendor/**": true,
         "**/.git/subtree-cache/**": true,
         "**/node_modules/*/**": true
-    }
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    },
+    "python.formatting.provider": "none"
 }

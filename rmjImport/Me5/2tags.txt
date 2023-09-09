@@ -1,0 +1,27 @@
+08/26/2023 06:18:33.795 PM Sending  --clear tag buffer is 2Ah
+    FF  00  2A  1D  25
+08/26/2023 06:18:33.799 PM Received
+    FF  00  2A  00  00  01  E8
+08/26/2023 06:18:33.800 PM Sending  -- set antenna port is 91h
+    FF  03  91  02  02  02  41  C6
+08/26/2023 06:18:33.815 PM Received  
+    FF  00  91  00  00  17  58
+08/26/2023 06:18:33.815 PM Sending  --  read tag multi, use configured antenna (0000), timeout = (1301)   22h
+    FF  05  22  00  00  13  01  F4  2B  19
+08/26/2023 06:18:34.326 PM Received  
+    FF  04  22  00  00  00  00  13  02  68  AA  --for the depricated response this woudd be 2 tags
+08/26/2023 06:18:34.327 PM Sending  --  get tags from buffer 
+    FF  03  29  0F  FF  00  FA  CD
+08/26/2023 06:18:34.350 PM Received
+    FF  48  29  00  00  01  FF  00  02- tag count is 02  8 bytes 
+    09  EB  22  0D  D7  F2  00  00  00  16  07  C4  05  00  00  00  00  80  30  00- read metadata 20 bytes
+    E2  80  69  95  00  00  50  06  BC  52  45  E3- tag epc  12 bytes
+    62  1D- tag CRC 
+    09  EB  22  0D  D7  F2  00  00  00  1E  0F  13  05  00  00  00  00  80  30  00- read metadata 20 bytes
+    E2  80  69  95  00  00  50  06  BC  52  49  E3- tag epc
+    27  70- tag CRC
+    81  37- msg CRC
+08/26/2023 06:18:34.369 PM Sending
+    FF  00  72  1D  7D
+08/26/2023 06:18:34.383 PM Received
+    FF  01  72  00  00  15  48  12

@@ -187,7 +187,7 @@ return [
     'markdown'				=> 'This field allows <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
     'min_amt'				=> 'Min. QTY',
     'min_amt_help'          => 'Minimum number of items that should be available before an alert gets triggered. Leave Min. QTY blank if you do not want to receive alerts for low inventory.',
-    'model_no'				=> 'Heartwood', //will be BHC or FOHC
+    'model_no'				=> 'Model No.', //Can be used for species group or short name
     'months'				=> 'months',
     'moreinfo'				=> 'More Info',
     'name'					=> 'Name',
@@ -369,7 +369,7 @@ return [
     'notification_info'      => 'Info:',
     'asset_information'     => 'Asset Information',
     'model_name'            => 'Model Name',
-    'asset_name'            => 'WxHxL',  //dimensions in WxHxL to match Hundegger
+    'asset_name'            => 'TxWxL',  //dimensions in WxHxL to match Hundegger
     'consumable_information' => 'Consumable Information:',
     'consumable_name'       => 'Consumable Name:',
     'accessory_information' => 'Accessory Information:',
