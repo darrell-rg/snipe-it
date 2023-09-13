@@ -190,6 +190,10 @@ class AssetModelsController extends Controller
 
 
         if ($assetmodel->save()) {
+            // if (!$this->assignCustomFieldsDefaultValues($model, $request->input('default_values'))){
+                
+            // }
+
             return response()->json(Helper::formatStandardApiResponse('success', $assetmodel, trans('admin/models/message.update.success')));
         }
 

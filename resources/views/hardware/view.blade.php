@@ -903,13 +903,20 @@
                                 @endif
 
 
-                                {{--Map Image --}}
+                                {{--Open Layers Map --}}
                                 <div class="col-md-12" style="padding-top: 5px;" id="mapImageDiv" >
-                                    {{-- <a href="/img/blank.png" data-toggle="lightbox" id="mapImagelink">
-                                        <img src="/img/blank.png" class="img-thumbnail" alt="map" id="mapImage" style="max-height:600px">
-                                    </a> --}}
                                     <div id="map" style="width: 100%; height: 400px"></div>
-                                    <div id="popup"></div>
+                                    <div id="gpsinfo" style="display: none;"></div>
+                                    <label for="gpstrack">
+                                    <input id="gpstrack" type="checkbox" style="display: inline-flex"/>
+                                    Track My Position
+                                    </label>
+                                    <p id= "gpstext" style="display: none;" >
+                                    position : <code id="gpspos"></code>&nbsp;&nbsp;
+                                    heading : <code id="heading"></code>&nbsp;&nbsp;
+                                    accuracy : <code id="accuracy"></code>&nbsp;&nbsp;
+                                    </p>
+
                                 </div>
 
                                 @if  ($snipeSettings->qr_code=='1')

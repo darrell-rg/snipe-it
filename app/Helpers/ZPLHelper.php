@@ -55,23 +55,19 @@ class ZPLHelper
         
     }
 
-    /*
-     * I know it's gauche  to return a shitty HTML string, but this is just a helper and since it will be the same every single time,
-     * it seemed pretty safe to do here. Don't you judge me.
-     */
     public static function get4x6ZPL($asset, $username="") {
         // This is the PHP for the 6x6 Label
         $qr = config('app.url');
         $qr = "$qr/hardware/$asset->id";
         $modelName = explode("-",$asset->model->name);
-        $heartCenter = $modelName[1];  // "DF-FOHC"
-        $heartCenter = $asset->model->model_number;
+        $heartCenter = $asset->_snipeit_pith_18;  // "FOHC"
+        //$heartCenter = $asset->model->model_number;
         $sup = ($asset->supplier) ? $asset->supplier->name : '';
         $or = $asset->order_number;
         $dt = Helper::getFormattedDateObject($asset->purchase_date, 'date', false);//"2022-14-07";
-        $grade = $asset->_snipeit_grade_2 .' '. $asset->model->model_number; //model_no is BHC or FOHC
+        $grade = $asset->_snipeit_grade_2;
         $con = $asset->_snipeit_condition_9;
-        $dry = $asset->_snipeit_dryness_3;
+        $dry = $asset->_snipeit_moisture_3;
         $bdf = str_contains($asset->_snipeit_bdf_8,'.') ? explode(".",$asset->_snipeit_bdf_8)[0] : $asset->_snipeit_bdf_8;
         $inv = $asset->company->name;
         $bc = $asset->asset_tag;

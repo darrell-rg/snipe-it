@@ -87,6 +87,7 @@
                             data-bulk-button-id="#bulkAssetEditButton"
                             data-bulk-form-id="#assetsBulkForm"
                             data-click-to-select="true"
+                            data-show-footer="true"
                             data-show-export="true"
                             data-show-refresh="true"
                             data-sort-order="asc"
@@ -97,7 +98,7 @@
                 "fileName": "export-models-{{ str_slug($model->name) }}-assets-{{ date('Y-m-d') }}",
                 "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                 }'>
-                    </table>
+            </table>
                     {{ Form::close() }}
                 </div> <!-- /.tab-pane assets -->
 

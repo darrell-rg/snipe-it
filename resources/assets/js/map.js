@@ -14,11 +14,13 @@ import { transform, fromLonLat, transformExtent, get as getProjection, } from 'o
 import { OSM, Vector as VectorSource } from 'ol/source.js';
 import { Point } from 'ol/geom';
 import Feature from 'ol/Feature';
-import { Circle as CircleStyle, Stroke, Style, Icon } from 'ol/style.js';
+import { Circle as CircleStyle, Stroke, Style, Icon, Fill } from 'ol/style.js';
 import { easeOut } from 'ol/easing.js';
 import { getVectorContext } from 'ol/render.js';
 import { unByKey } from 'ol/Observable.js';
 import { Control, defaults as defaultControls } from 'ol/control.js';
+import Geolocation from 'ol/Geolocation.js';
+
 // import bootstrap
 
 //EPSG:4326 is  WGS 84 --= WGS84 - World Geodetic System 1984, used in GPS
@@ -64,7 +66,7 @@ function updateLocation(geometry = null) {
     console.log("got  latLng from lastGpsString", gpsLoc, newLoc)
 
     if (geometry)
-      geom.setCoordinates(newLoc);
+      itemLocationGeom.setCoordinates(newLoc);
 
     return gpsLoc;
 
@@ -94,6 +96,7 @@ const imageLayer = new ImageLayer({
   }),
   opacity: 0.8
 });
+
 const tileLayer = new TileLayer({
   source: new OSM({
     wrapX: false,
@@ -102,37 +105,66 @@ const tileLayer = new TileLayer({
 });
 
 
-const geom = new Point(fromLonLat(itemLocation));
+const itemLocationGeom = new Point(fromLonLat(itemLocation));
+const itemPosFeature =new Feature(itemLocationGeom);
+itemPosFeature.setStyle(
+  new Style({
+    image: new CircleStyle({
+      radius: 6,
+      fill: new Fill({
+        color: 'Red',
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 2,
+      }),
+    }),
+  })
+);
 
-function getPointFeature(geom) {
-  const feature = new Feature(geom);
-  //source.addFeature(feature);
-  return feature;
+
+const myPositionFeature = new Feature();
+myPositionFeature.setStyle(
+  new Style({
+    image: new CircleStyle({
+      radius: 6,
+      fill: new Fill({
+        color: '#3399CC',
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 2,
+      }),
+    }),
+  })
+);
+
+const accuracyFeature = new Feature();
+
+const vectorLayer = new VectorLayer({
+  source: new VectorSource({
+    features: [itemPosFeature,accuracyFeature, myPositionFeature],
+  }),
+});
+
+function el(id) {
+  return document.getElementById(id);
 }
 
-
-const features = [];
-const pointFeature = getPointFeature(geom);
-features.push(pointFeature);
-const source = new VectorSource({
-  features: features,
-});
-const vectorLayer = new VectorLayer({
-  source: source,
-  style: {
-    'fill-color': 'rgba(255, 255, 255, 0.2)',
-    'stroke-color': '#00000',
-    'stroke-width': 3,
-    'circle-radius': 7,
-    'circle-fill-color': '#ff0033',
+const geolocation = new Geolocation({
+  // enableHighAccuracy must be set to true to have the heading value.
+  trackingOptions: {
+    enableHighAccuracy: true,
   },
+  gpsProjection
 });
+
 
 const olMap = new Map({
   layers: [
     tileLayer,
     imageLayer,
-    vectorLayer,
+    vectorLayer
   ],
   target: 'map',
   view: new View({
@@ -149,7 +181,60 @@ const olMap = new Map({
 
 window.olMap = olMap;
 
-const element = document.getElementById('popup');
+
+function encodePosition(coords) {
+  console.log(coords)
+  return "@"+coords[1]+","+coords[0]
+}
+
+
+function addGpsListeners(){
+  console.log("adding gps listeners")
+  let needsViewFit = true;
+
+  el('gpstrack').addEventListener('change', function () {
+    console.log("starting gps tracking")
+    geolocation.setTracking(this.checked);
+    //needsViewFit = this.checked;
+  });
+  
+  // update the HTML page when the position changes.
+  geolocation.on('change', function () {
+    el('accuracy').innerText = geolocation.getAccuracy() + ' [m]';
+    // el('altitude').innerText = geolocation.getAltitude() + ' [m]';
+    el('heading').innerText = geolocation.getHeading() + ' [rad]';
+    el('gpspos').innerText = encodePosition(geolocation.getPosition())+ ' [m/s]';
+  });
+  
+  // handle geolocation error.
+  geolocation.on('error', function (error) {
+    console.log(error.message);
+    const info = document.getElementById('gpsinfo');
+    info.innerHTML = error.message;
+    info.style.display = '';
+  });
+  
+  geolocation.on('change:accuracyGeometry', function () {
+    accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+  });
+
+  geolocation.on('change:position', function () {
+    const coordinates = geolocation.getPosition();
+    const myPosGeom = coordinates ? new Point(fromLonLat(coordinates)) : null;
+    myPositionFeature.setGeometry(myPosGeom);
+    flash(myPositionFeature, 1)
+    if (needsViewFit && myPosGeom)
+    {
+      var padding = [20, 20, 20, 20];
+      olMap.getView().fit(vectorLayer.getSource().getExtent(), {
+        padding: padding,
+      });
+      needsViewFit = false;
+    }
+
+  });
+  
+}
 
 
 const duration = 3000;
@@ -208,9 +293,11 @@ function getIconFeature(lonLat) {
     })
   });
 }
-flash(pointFeature, 10)
+flash(itemPosFeature, 1)
 
-
-window.setInterval(updateLocation, 5000), geom;
+//this is for updating location from lastgps field
+//window.setInterval(updateLocation, 5000), geom;
+addGpsListeners()
+//window.setTimeout(addGpsListeners,2000);
 // const staticImgExtent = imageLayer.getSource().getImageExtent()
 // console.log("static img extent =",staticImgExtent)

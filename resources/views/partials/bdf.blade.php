@@ -66,19 +66,37 @@ function autoSetModel(){
     //TBD
 }
 
+function addListeners(){
+    if ( $( "#_snipeit_length_7" ).length ) 
+    {
+        console.log("adding auto bdf calc listeners");
+        $( "#_snipeit_length_7,#_snipeit_width_5,#_snipeit_thickness_4" ).on( "change", function() {
+            calcBDF();
+            calcName();
+            calcPurchaseCost();
+            autoSetModel();
+        } );
 
-$( "#_snipeit_length_7,#_snipeit_width_5,#_snipeit_thickness_4" ).on( "change", function() {
-    calcBDF();
-    calcName();
-    calcPurchaseCost();
-    autoSetModel();
-} );
+
+        $( "#_snipeit_bdf_cost_10,#_snipeit_freight_11,#_snipeit_bdf_8" ).on( "change", function() {
+            calcPurchaseCost();
+        } );
+
+    }
+    else{
+        console.log("wait until length exists");
+        setTimeout( addListeners, 1000 );
+    }
 
 
-$( "#_snipeit_bdf_cost_10,#_snipeit_freight_11,#_snipeit_bdf_8" ).on( "change", function() {
-    calcPurchaseCost();
-} );
+}
 
+
+
+
+$( document ).ready(function() {
+        addListeners();
+});
 
 </script>
 

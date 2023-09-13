@@ -213,6 +213,11 @@ class Asset extends Depreciable
                     }
                 }
             }
+    }
+
+        if ($this->model_id == 1) {
+            $model = AssetModel::find($this->model_id);
+            //TODO: auto set the model id
         }
 
 

@@ -219,7 +219,7 @@ CREATE TABLE `assets` (
   `requests_counter` int(11) NOT NULL DEFAULT 0,
   `byod` tinyint(1) DEFAULT 0,
   `_snipeit_grade_2` text DEFAULT NULL,
-  `_snipeit_dryness_3` text DEFAULT NULL,
+  `_snipeit_moisture_3` text DEFAULT NULL,
   `_snipeit_thickness_4` text DEFAULT NULL,
   `_snipeit_width_5` text DEFAULT NULL,
   `_snipeit_length_7` text DEFAULT NULL,
@@ -528,7 +528,7 @@ LOCK TABLES `custom_fields` WRITE;
 /*!40000 ALTER TABLE `custom_fields` DISABLE KEYS */;
 INSERT INTO `custom_fields` VALUES 
 (2,'Grade','','listbox','2023-08-15 19:07:38','2023-08-15 19:07:38',NULL,'#1\r\n#1 SS\r\n#2\r\n#2 CONHRT\r\n#2/Btr\r\n#2/Btr App\r\n#3',0,'_snipeit_grade_2',NULL,0,0,0,1,1),
-(3,'Dryness','','listbox','2023-08-15 19:08:54','2023-08-15 19:08:54',NULL,'GR\r\nAD\r\nKD\r\nRF KD\r\nLC KD',0,'_snipeit_dryness_3',NULL,0,0,0,1,1),
+(3,'Dryness','','listbox','2023-08-15 19:08:54','2023-08-15 19:08:54',NULL,'GR\r\nAD\r\nKD\r\nRF KD\r\nLC KD',0,'_snipeit_moisture_3',NULL,0,0,0,1,1),
 (4,'Width','numeric','text','2023-08-15 19:11:44','2023-08-20 16:41:35',1,'',0,'_snipeit_thickness_4','(inches) Second smallest dimension. For a 2x4 width = 4',0,0,1,1,1),
 (5,'Height','numeric','text','2023-08-15 19:12:23','2023-08-20 16:42:13',1,'',0,'_snipeit_width_5','(inches) Smallest dimension. For a 2x4 height = 2',0,0,1,1,1),
 (7,'Length','numeric','text','2023-08-15 19:13:46','2023-08-20 16:43:01',1,'',0,'_snipeit_length_7','(feet) The longest dimension ',0,0,1,0,1),

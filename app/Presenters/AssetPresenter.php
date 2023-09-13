@@ -290,6 +290,14 @@ class AssetPresenter extends Presenter
         // they are presented in the blade view. If we escape them here, custom fields with quotes in their
         // name can break the listings page. - snipe
         foreach ($fields as $field) {
+
+            $footerFormatter = null;
+            //$field->field_format == CustomField::PREDEFINED_FORMATS['NUMERIC']
+            //Show total board feet
+            if($field->name == 'BDF'){
+                $footerFormatter = 'sumFormatterCustom';
+            }
+
             $layout[] = [
                 'field' => 'custom_fields.'.$field->db_column,
                 'searchable' => true,
@@ -297,6 +305,7 @@ class AssetPresenter extends Presenter
                 'switchable' => true,
                 'title' => $field->name,
                 'formatter'=> 'customFieldsFormatter',
+                'footerFormatter'=> $footerFormatter,
                 'escape' => true,
                 'class' => ($field->field_encrypted == '1') ? 'css-padlock' : '',
                 'visible' => ($field->show_in_listview == '1') ? true : false,

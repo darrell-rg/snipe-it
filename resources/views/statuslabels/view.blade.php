@@ -25,6 +25,7 @@
                                         data-show-fullscreen="true"
                                         data-show-export="true"
                                         data-show-refresh="true"
+                                        data-show-footer="true"
                                         data-sort-order="asc"
                                         data-toolbar="#assetsBulkEditToolbar"
                                         data-bulk-button-id="#bulkAssetEditButton"

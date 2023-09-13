@@ -37,7 +37,7 @@
                                           "field_format": "DATE",
                                           "value": ""},
                          "Dryness": {   "element": "listbox",
-                                        "field": "_snipeit_dryness_3",
+                                        "field": "_snipeit_moisture_3",
                                         "field_format": "ANY",
                                         "value": ""},
                          "Dryness Today": {   "element": "text",

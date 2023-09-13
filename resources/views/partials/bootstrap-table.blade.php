@@ -746,6 +746,28 @@
         return 'not an array';
     }
 
+    function getCustomFieldValue(row,title,db_column_name) {
+        const col_name = db_column_name.replace('custom_fields.','');
+        const f = row.custom_fields[title]
+        if(f && f.field == col_name)
+            return f.value;
+        return undefined;
+    }
+    
+    function sumFormatterCustom(data) {
+        if (Array.isArray(data)) {
+            var field = this.field;
+            var title = this.title;
+            var total_sum = data.reduce(function(sum, row) {
+                return (sum) + (cleanFloat(getCustomFieldValue(row,title,field)) || 0);
+            }, 0);
+            // if(total_sum < 1)
+                // console.log("sumformatter data=",field,data);
+            return numberWithCommas(total_sum.toFixed(2));
+        }
+        return 'not an array';
+    }
+
     function sumFormatterQuantity(data){
         if(Array.isArray(data)) {
             
