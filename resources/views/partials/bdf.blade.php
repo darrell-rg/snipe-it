@@ -77,10 +77,20 @@ function addListeners(){
             autoSetModel();
         } );
 
-
         $( "#_snipeit_bdf_cost_10,#_snipeit_freight_11,#_snipeit_bdf_8" ).on( "change", function() {
             calcPurchaseCost();
         } );
+
+
+        $( "#model_select_id" ).on( "change", function() {
+            setTimeout( calcName, 500 );
+        } );
+
+
+        if( document.getElementById("name").value == ''){
+            setTimeout( calcName, 100 );
+        }
+    
 
     }
     else{

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Assets;
 
 use App\Helpers\Helper;
+use App\Helpers\RFIDHelper;
 use App\Helpers\ZPLHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
@@ -152,6 +153,7 @@ class AssetsController extends Controller
             $asset->rtd_location_id         = request('rtd_location_id', null);
             $asset->byod                    = request('byod', 0);
 
+            
             if (! empty($settings->audit_interval)) {
                 $asset->next_audit_date = Carbon::now()->addMonths($settings->audit_interval)->toDateString();
             }
@@ -188,6 +190,8 @@ class AssetsController extends Controller
                     }
                 }
             }
+
+            $asset->serial = RFIDHelper::getRFIDHexString($asset); 
 
             // Validate the asset before saving
             if ($asset->isValid() && $asset->save()) {
@@ -386,7 +390,8 @@ class AssetsController extends Controller
             }
         }
 
-
+        $asset->serial = RFIDHelper::getRFIDHexString($asset); 
+        
         if ($asset->save()) {
             return redirect()->route('hardware.show', $assetId)
                 ->with('success', trans('admin/hardware/message.update.success'));

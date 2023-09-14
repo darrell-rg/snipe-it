@@ -221,7 +221,7 @@
                                                 <strong>{{ trans('admin/hardware/form.serial') }}</strong>
                                             </div>
                                             <div class="col-md-6">
-                                                {{ $asset->serial  }}
+                                                {{ \App\Helpers\RFIDHelper::formatEPC($asset->serial) }}
                                             </div>
                                         </div>
                                     @endif

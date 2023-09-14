@@ -45,8 +45,10 @@
       @endif
   </div>
 
-    @include ('partials.forms.edit.serial', ['fieldname'=> 'serials[1]', 'old_val_name' => 'serials.1', 'translated_serial' => trans('admin/hardware/form.serial')])
-
+    <div style="display:none">
+        @include ('partials.forms.edit.serial', ['fieldname'=> 'serials[1]', 'old_val_name' => 'serials.1', 'translated_serial' => trans('admin/hardware/form.serial')]) 
+    </div>
+    
     <div class="input_fields_wrap">
     </div>
 
@@ -302,7 +304,7 @@
                 box_html += '</div>';
                 box_html += '</div>';
                 box_html += '</div>';
-                box_html += '<div class="form-group"><label for="serial" class="col-md-3 control-label">{{ trans('admin/hardware/form.serial') }} ' + x + '</label>';
+                box_html += '<div class="form-group" style="display:none"><label for="serial" class="col-md-3 control-label">{{ trans('admin/hardware/form.serial') }} ' + x + '</label>';
                 box_html += '<div class="col-md-7 col-sm-12">';
                 box_html += '<input type="text"  class="form-control" name="serials[' + x + ']">';
                 box_html += '</div>';

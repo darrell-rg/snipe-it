@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use App\Models\Setting;
 use Image;
-
+use App\Helpers\RFIDHelper;
 use RuntimeException;
 // This is the PHP for the 6x6 Label
 use Illuminate\Support\Facades\Log;
@@ -77,53 +77,18 @@ class ZPLHelper
             $bc = str_pad($bc, 15, " ", STR_PAD_RIGHT);;   
         }
 
-        // TODO: use SGTIN-96 standard for RFID data
-        // https://docs.zebra.com/content/tcm/us/en/printers/software/zebra-zpl-ii,-zbi-2,-set-get-do,-mirror,-wml-programming-guide/c-zpl-rfid-zpl-rfid-commands/r-zpl-rfid-rb.html
-        //https://awc.org/codes-and-standards/weights-and-measurement/
-
-        // Serialised Global Trade Item Number (SGTIN)
-        // The Serialised Global Trade Item Number EPC scheme is used to assign a unique identity to an
-        // instance of a trade item, such as a specific instance of a product or SKU.
-        // urn:epc:id:sgtin:CompanyPrefix.ItemRefAndIndicator.SerialNumber
-
-        // Global Location Number With or Without Extension (SGLN)
-        // The SGLN EPC scheme is used to assign a unique identity to a physical location, such as a specific
-        // building or a specific unit of shelving within a warehouse.
-        // General syntax:
-        // urn:epc:id:sgln:CompanyPrefix.LocationReference.Extension
-
-        // BYTE 0: Version Num
-        // BYTE 1: Species_ID  256 possible species 
-        // BYTE 2: W in 1/4 Inches  = 64" max W
-        // BYTE 3: H in 1/4 Inches  = 64" max H
-        // BYTE 4: L in 1/4 Feet    = 64' max len 
-        // BYTE 5: 1bit FOHC + 4bit Grade = 16 grades  + 3bit moisture = 8 moistures
-        // BYTE 6-12 : Serial number  
-        // 2.8147498e+14 = 48bits 
-        // ZPL ^RB to set up SIGTIN 
-        // https://docs.zebra.com/content/tcm/us/en/printers/software/zebra-zpl-ii,-zbi-2,-set-get-do,-mirror,-wml-programming-guide/c-zpl-rfid-zpl-rfid-commands/r-zpl-rfid-rb.html
-
-
-        // Header
-        // Filter Value
-        // Partition
-        // Company Prefix Index
-        // Item Reference
-        // Serial Number
-        // SGTIN-96
-        // 8 bits   3 bits   3 bits   20–40 bits  24 bits  38 bits
-
-        // 10 (binary value)
-        // 8 (decimal capacity)
-        // 8 (decimal capacity)
-        // 16,383 (decimal capacity)
-        // 9 to 1,048,575 (decimal capacity*)
-        // 33,554,431 (decimal capacity)
 
         $rfidSerial = $asset->serial;
+        //TODO: check that serial is a valid 12 byte hex String
+
+        if((strlen($rfidSerial)!=24)){
+            Log::warning("Found Invalid RFID serial string, generating a new one.");
+            $rfidSerial = RFIDHelper::getRFIDHexString($asset); 
+        }
+
         $rfidZplCode = <<<EOD
         ^FX Write the RFID in hex 96 bits is 12 bytes
-        ^RFW,A^FD$rfidSerial^FS
+        ^RFW,H^FD$rfidSerial^FS
         ^FX read the RFID EPC into Field3 hex format(H)
         ^FN3^RFR,H,0,1,1^FS
         ^HV3,16,SL4MEPC=^FS
@@ -173,8 +138,111 @@ class ZPLHelper
         return $zpl;
 
     }
-}
 
+    public static function get4x2ZPL($asset, $username="") {
+
+        //this is for the 4x2 label
+        $qr = config('app.url');
+        $qr = "$qr/hardware/$asset->id";
+        // errorCorrection=H (highest reliability) or Q (high reliability)  input mode A
+        $qrMode = "QA";
+        //H needs mag 5 and Q needs mag 6 to fill empty space
+        //TODO: figure out maxium length of qr, make qrMag smaller if qr code string is too long
+        $qrMag = "6";
+        $modelName = explode("-",$asset->model->name);
+        $topLine = $modelName[0].'-'.$asset->name;  // "DF-8x18x23"
+        //moving FOHC to the end of the grade line since it makes the top line too long for 4x2 label
+
+        $topLineLen = strlen($topLine);
+
+        //font A size 90 can fit 12 chars
+        $topLineFont = "A,90";
+        if ($topLineLen<12){
+            $topLine = str_pad($topLine, 13, " ", STR_PAD_BOTH);
+        }
+        if ($topLineLen>12){
+            //font size 80 can fit 14 chars
+            $topLineFont = "A,80";
+        }
+        if ($topLineLen>14){
+            //font size 70 can fit 16 chars
+            $topLineFont = "A,70";
+        }
+        if ($topLineLen>16){
+            //font size 60 can fit 18 chars
+            $topLineFont = "A,60";
+        }
+
+        $sup = $asset->supplier->name;
+        $or = $asset->order_number;
+        $dt = Helper::getFormattedDateObject($asset->purchase_date, 'date', false);//"2022-14-07";
+        $gr = $asset->_snipeit_grade_2 .' '. $asset->model->model_number; //model_no is BHC or FOHC
+        $con = $asset->_snipeit_condition_9;
+        $bc = $asset->asset_tag;//$asset->serials[1];
+        $barcodeWidth = "3";
+        $barcodeRatio = "2";
+
+
+        if (strlen($bc)>15){
+            $barcodeWidth = "3";   
+        }
+        if((strlen($bc)<15)){
+            $bc = str_pad($bc, 15, " ", STR_PAD_RIGHT);;   
+        }
+
+        $zpl = <<<EOD
+        ^XA
+        ^FX POI will flip 180, so that the label will print on top of the rfid inlay
+        ^PON
+        ^FX Top section, designed for 203 dpi (8dpmm)
+        ^CF$topLineFont
+        ^FO5,5^FD$topLine^FS
+        ^FX order info
+        ^CFA,30
+        ^FO220,105^FD SUP: $sup^FS
+        ^FO220,135^FD OR#: $or^FS
+        ^FO220,165^FD  DT: $dt^FS
+        ^FO220,195^FD  GR: $gr^FS
+        ^FO220,225^FD CON: $con^FS
+        ^FX QR code mag=6, errorCorrection=H (highest reliability) or Q (high reliability)  input mode A
+        ^FX Q H needs mag 6 and Q needs mag 7 to fill empty space
+        ^FO10,100^BQ,,$qrMag^FD$qrMode,$qr^FS
+        ^FX right staple box
+        ^CFA,15
+        ^FO620,95^GB190,190,3^FS
+        ^FO670,170^FDStaple^FS
+        ^FO670,190^FD Here^FS
+        ^FX Bottom section with 1-D bar code 
+        ^FX 
+        ^BY$barcodeWidth,$barcodeRatio,100
+        ^FO100,320^BCN,100,Y,Y,Y,N^FD$bc^FS
+        ^FX read the RFID into field 2
+        ^RT2,0,1,1^FS
+        ^FX print the rfid data to the bottom of the label
+        ^FO20,900^A0N,60^FN2^FS
+        ^FX Write the RFID in hex 96 bits is 12 bytes
+        ^RFW,A^FDDARRELL37337^FS
+        ^FX read the RFID into field 3
+        ^RT3,0,1,1^FS
+        ^FX print the rfid data to the bottom of the label
+        ^FO20,1000^A0N,60^FN3^FS
+        ^FX print field 3 to the data out port(normaly telent 9100)
+        ^HV3,16,TAGNO = ^FS
+        ^XZ
+        EOD;
+
+        //remove comments and newlines
+        $lines = explode("\n",$zpl);
+        $a = array_filter($lines, function ($x) { return ! str_starts_with($x,'^FX'); });
+        $singleLineZpl = rawUrlencode(implode('',$a));  //use rawUrlencode so spaces do not get changed into + 
+
+        return $zpl;
+        //api.labelary.com makes a png with 2px per dot so the png is 812x406 
+        //The factors of 406 are 1, 2, 7, 14, 29, 58, 203, 406. Pick a factor so preview is not blurry
+
+    }
+
+}
 
 class CommunicationException extends RuntimeException
 {

@@ -170,6 +170,7 @@ const olMap = new Map({
   view: new View({
     center: webMercatorCenter,
     zoom: 18,
+    enableRotation: false
     // projection: webMercatorProj,
   }),
   controls: defaultControls({

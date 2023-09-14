@@ -119,5 +119,5 @@
 
 </script>
 @if (isset($loadMap))
-    <script type="module" src="/js/build/map.js">
+<script type="module" src="{{ url('js/build/map.js') }}" nonce="{{ csrf_token() }}"></script>
 @endif    
