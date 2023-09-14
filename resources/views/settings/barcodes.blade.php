@@ -163,7 +163,7 @@
                         </div>
 
 
-                        <!-- Webserial Testing -->
+                        <!-- Webserial Testing ,   -->
                         <div class="form-group">
                             <div class="col-md-3">
                                 {{ Form::label('serialtestrow', "Web Serial Test") }}
@@ -179,12 +179,57 @@
                             </div>
                             <div class="col-md-9 col-md-offset-3">
                                 <p class="help-block">chrome://device-log/</p>
-                                <p class="serialtestdata">chrome://device-log/</p>
+                                <p class="serialtestdata"></p>
                             </div>
 
                         </div>
 
 
+                        <!-- webusb Testing  -->
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                {{ Form::label('usbtestrow', "Web USB Test") }}
+                            </div>
+                            <div class="col-md-9" id="usbtestrow">
+                            ZPL to print:<br>
+                            <textarea id="printContent" rows="10" cols="50">
+^XA
+^FX Top section with logo, name and address.
+^CF0,60
+^FO50,50^GB100,100,100^FS
+^FO75,75^FR^GB100,100,100^FS
+^FO93,93^GB40,40,40^FS
+^FO220,50^FDWeb USB test ^FS
+^CF0,190
+^FO100,300^FDWEB^FS
+^FO100,600^FDUSB^FS
+^FX Third section with bar code.
+^BY5,2,270
+^FO100,800^BC^FDMorgan^FS
+^FX Write the RFID in hex 96 bits is 12 bytes
+^WT0^FH^FD_00_00_00_MORGAN000^FS
+^XZ
+                                </textarea>
+                                <a class="btn btn-default btn-sm pull-left" id="usbtest" onclick="requestDevice()" style="margin-right: 10px;">Select Printer</a>
+                                <a class="btn btn-default btn-sm pull-left" id="usbdevice" style="display:none"></a>
+                                <span id="usbtesticon"></span>
+                                <span id="usbtestresult"></span>
+                                <span id="usbteststatus"></span>
+                            </div>
+                            <div class="col-md-9 col-md-offset-3">
+                                <div id="usbteststatus-error" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-9 col-md-offset-3">
+
+                            </div>
+
+                        </div>
+
+
+
+
+
+	</script>
 
                     </div>
 
@@ -260,6 +305,69 @@
             });
         });
 
+// make sure you are in the "lp" group on linux so you have printer permissions
+// sudo usermod -a -G lp darrell
+
+// look at devices with lsusb:
+// >lsusb -v -d 14ae:0000
+
+// you may need to unload the kernal driver to fix this error:
+//      Failed to claim interface 0: Device or resource busy (16)
+// find the driver with >usb-devices 
+// driver name is usblp, use modprobe to stop it
+// >sudo modprobe -r usblp
+
+// you may also need to stop cups if cups is grabing that device
+// sudo service cups stop
+// sudo snap stop cups
+// sudo snap disable cups
+
+if ("usb" in navigator) {
+    console.log("The Web USB API is supported.");
+}
+
+async function requestDevice() {
+    try {
+        const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x14ae }] })
+        const elem = document.querySelector('#usbdevice');
+        elem.style = '';
+        console.log("device is ",device)
+        elem.textContent = `Print ZPL to device '${device.vendorId}:${device.productId}'`;
+        elem.onclick = () => testPrint(device);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function testPrint(device) {
+    var zplString = document.getElementById("printContent").value + "\n";
+        await device.open();
+        await device.selectConfiguration(1);
+        await device.claimInterface(0);
+        await device.transferOut(
+            device.configuration.interfaces[0].alternate.endpoints.find(obj => obj.direction === 'out').endpointNumber,
+            new Uint8Array(
+                new TextEncoder().encode(zplString)
+            ),
+        );
+    await device.close();
+}
+
+
+
+function connectUSB() {
+    navigator.usb.getDevices()
+        .then(devices => {
+            if (devices.length > 0) {
+                console.log("found these usb devices ",devices)
+            }
+            else{
+                console.log("found zero usb devices")
+            }
+        })
+        .catch(error => { console.log(error); });
+}
+
     
 async function sendSerialData(){
     while (port.readable) {
@@ -298,11 +406,55 @@ if ("serial" in navigator) {
 
     $("#serialtest").click( () => {
         console.log("Starting Serial test.");
-        const usbVendorId = 0xabcd;
+        const usbVendorId = 0x0403; //ftdi is 0403
+        //Bus 001 Device 011: ID 0403:6010 Future Technology Devices International, Ltd FT2232C Dual port
+        //may need to plug/unplug for chrome to find it
+        // may need sudo snap connect chromium:raw-usb
+        // plug/unplug event should show in chrome://device-log/
+        const filters = [
+            { usbVendorId: 0x0403, usbProductId: 0x6010 },
+            { usbVendorId: 0x2341, usbProductId: 0x0001 }
+        ];
         navigator.serial
-            .requestPort({ filters: [{ usbVendorId }] })
+            // .requestPort({ filters }})
+            .requestPort()
             .then((port) => {
                 // Connect to `port` or add it to the list of available ports.
+                const reader = port.readable.getReader();
+
+                // Turn on Data Terminal Ready (DTR) signal.
+                //await port.setSignals({ dataTerminalReady: true });
+
+                //const writer = port.writable.getWriter();
+
+                //const data = new Uint8Array([104, 101, 108, 108, 111]); // hello
+                //await writer.write(data);
+
+
+                const textEncoder = new TextEncoderStream();
+                const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
+
+                const writer = textEncoder.writable.getWriter();
+                
+                // await writer.write("~HI\n");
+
+                // Allow the serial port to be closed later.
+                writer.releaseLock();
+
+                // Listen to data coming from the serial device.
+                // while (true) {
+                //     const { value, done } = await reader.read();
+                //     if (done) {
+                //         // Allow the serial port to be closed later.
+                //         reader.releaseLock();
+                //         break;
+                //     }
+                //     // value is a Uint8Array.
+                //     console.log(value);
+                // }
+
+
+
             })
             .catch((e) => {
                 // The user didn't select a port.

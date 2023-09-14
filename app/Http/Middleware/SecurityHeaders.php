@@ -50,7 +50,7 @@ class SecurityHeaders
         $feature_policy[] = "fullscreen 'none'";
         $feature_policy[] = "geolocation 'self'";
         $feature_policy[] = "sync-xhr 'none'";
-        $feature_policy[] = "usb 'none'";
+        $feature_policy[] = "usb 'self'";
         $feature_policy[] = "xr-spatial-tracking 'none'";
 
         $feature_policy = implode(';', $feature_policy);
