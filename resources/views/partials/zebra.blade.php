@@ -12,7 +12,7 @@ $apiUrl = config('app.url') . "/hardware/". $asset->id ."/zpl_png"
     alt="Zebra Label preview for {{ $asset->getDisplayNameAttribute() }}">
 
 {{--hidden pre tag for debugging zpl--}}  
-@if(env('APP_ENV')=='development') 
+@if(env('APP_ENV')=='developmentjjjj') 
 <pre style="text-align:left">
 Reply from {{$printerIP}}: 
 {{$result}}

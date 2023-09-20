@@ -27,15 +27,7 @@ class AssetPresenter extends Presenter
                 'switchable' => true,
                 'title' => trans('general.id'),
                 'visible' => false,
-            ], [
-                'field' => 'company',
-                'searchable' => true,
-                'sortable' => true,
-                'switchable' => true,
-                'title' => trans('general.company'),
-                'visible' => false,
-                'formatter' => 'assetCompanyObjFilterFormatter',
-            ], [
+            ],  [
                 'field' => 'name',
                 'searchable' => true,
                 'sortable' => true,
@@ -48,7 +40,7 @@ class AssetPresenter extends Presenter
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('admin/hardware/table.image'),
-                'visible' => true,
+                'visible' => false,
                 'formatter' => 'imageFormatter',
             ], [
                 'field' => 'asset_tag',
@@ -62,7 +54,7 @@ class AssetPresenter extends Presenter
                 'searchable' => true,
                 'sortable' => true,
                 'title' => trans('admin/hardware/form.serial'),
-                'visible' => true,
+                'visible' => false,
                 'formatter' => 'hardwareLinkFormatter',
             ],  [
                 'field' => 'model',
@@ -82,7 +74,7 @@ class AssetPresenter extends Presenter
                 'searchable' => true,
                 'sortable' => true,
                 'title' => trans('general.category'),
-                'visible' => true,
+                'visible' => false,
                 'formatter' => 'categoriesLinkObjFormatter',
             ], [
                 'field' => 'status_label',
@@ -92,11 +84,19 @@ class AssetPresenter extends Presenter
                 'visible' => true,
                 'formatter' => 'statuslabelsLinkObjFormatter',
             ], [
+                'field' => 'company',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.company'),
+                'visible' => true,
+                'formatter' => 'assetCompanyObjFilterFormatter',
+            ], [
                 'field' => 'assigned_to',
                 'searchable' => true,
                 'sortable' => true,
                 'title' => trans('admin/hardware/form.checkedout_to'),
-                'visible' => true,
+                'visible' => false,
                 'formatter' => 'polymorphicItemFormatter',
             ], [
                 'field' => 'employee_number',
@@ -318,7 +318,7 @@ class AssetPresenter extends Presenter
             'sortable' => false,
             'switchable' => true,
             'title' => trans('general.checkin').'/'.trans('general.checkout'),
-            'visible' => true,
+            'visible' => false,
             'formatter' => 'hardwareInOutFormatter',
         ];
 

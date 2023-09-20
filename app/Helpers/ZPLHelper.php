@@ -86,6 +86,13 @@ class ZPLHelper
             $rfidSerial = RFIDHelper::getRFIDHexString($asset); 
         }
 
+        //Change password
+        //^RFW,H,P^FD<access password>^FS
+        //This command writes and specifies both the access password (12345678) and the kill password
+        // (88887777) separated by a comma.
+        //^RFW,H,P^FD12345678,88887777^FS
+        // The following command locks all memory banks using a previously specified access password.
+        //^RLM,L,L,L,L^FS
         $rfidZplCode = <<<EOD
         ^FX Write the RFID in hex 96 bits is 12 bytes
         ^RFW,H^FD$rfidSerial^FS

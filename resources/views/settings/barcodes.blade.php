@@ -322,6 +322,14 @@
 // sudo snap stop cups
 // sudo snap disable cups
 
+// how to add a udev rule for plugdev.   Maybe not needed?
+// sudo vim /etc/udev/rules.d/printonix.rules
+// #ID 14ae:0000 Printronix Inc.
+// SUBSYSTEM=="usb", ATTRS{idVendor}=="14ae", ATTR{idProduct}=="0000", MODE="0660", GROUP="plugdev"
+
+// how to turn on usb in chromium snap:
+// sudo snap connect chromium:raw-usb
+
 if ("usb" in navigator) {
     console.log("The Web USB API is supported.");
 }

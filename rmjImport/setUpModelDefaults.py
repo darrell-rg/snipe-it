@@ -36,8 +36,8 @@ def connect(pw):
     return (conn, cur)
 
 
-
-def getModelsFromApi():
+def getExistingModelsFromApi(server,token):
+    #load a dict that maps name to model ids
     M = snipeit.Models()
     modelsDict = json.loads( M.get(server, token, 5000) )# Using default limit of 5000 for results
     existing_model_ids = defaultdict() #default of None
@@ -46,8 +46,46 @@ def getModelsFromApi():
         if row['name'] == 'DF-FOHC-8x8x24':
             pp.pprint(row)
         existing_model_ids[row['name']]=row['id']
-
     return existing_model_ids
+
+def generateAllPossibleModels():
+
+    # generate a list of beam sizes
+    #Standard-- Standard lengths of lumber
+    #shall be in multiples of 0.3048 m (1 foot) or 0.6096
+    #m (2 feet) as specified in the certified grading 
+
+    species_group = ["CEDAR","DOUGLAS FIR","PINE"]
+    thickness = [5,6,7,8,9,10,11,12,14,16]
+    width = [5,6,7,8,9,10,11,12,13,14,15,16,18,20]
+    length = [4,5,6,8,10,12,14,16,18,20,22,24,28,32]
+    pith = ["FOHC","HC","BHC"]
+
+
+    unique_summaries=[]
+    for sg in species_group:
+        for t in thickness:
+            for w in width:
+                if w > t:
+                    for l in length:
+                        for p in pith:
+                            summary = f"{sg} - {p} - {t}x{w}x{l}"
+                            unique_summaries.append(summary) 
+        
+
+
+    print("number of model permutations:"+ str(len(unique_summaries)))
+
+
+def get_nominal_model_summary(species,pith,w,h,l):
+    # get the PS20 standard lumber size from actual size
+    # the model should represent what a supplier would call this line item 
+    thickness = math.floor(w) 
+    width = math.floor(h) 
+    length = math.floor(l)
+    summary = f"{species} - {pith} - {thickness}x{width}x{length}"
+    return summary
+
 
 def summaryToModel(summ,useHC=True,useDims=True,useLength=True,useNominal=True):
 
@@ -156,6 +194,9 @@ def summaryToModel(summ,useHC=True,useDims=True,useLength=True,useNominal=True):
         },
         {   'db_column_name': '_snipeit_markup_12',
             'default_value': 1.25
+        },
+        {   'db_column_name': '_snipeit_units_23',
+            'default_value': 'Nominal in/ft'
         }
     ]
 
@@ -165,7 +206,21 @@ def summaryToModel(summ,useHC=True,useDims=True,useLength=True,useNominal=True):
     return d
 
 
+def summaryToModelNoDims(s):
+    return summaryToModel(s,useHC=True,useDims=False,useLength=False)
 
+def summaryToModelNoLength(s):
+    return summaryToModel(s,useHC=True,useDims=True,useLength=False)
+
+def summaryToModelSpeciesOnly(s):
+    return summaryToModel(s,useHC=False,useDims=False,useLength=False)
+
+def modelToSummary(m,useHC=True):
+    if useHC:
+        return m['name']
+    species = m['name'].split('-')[0].strip()
+    dims = (m['name'].split('-')[1] or '').strip()
+    return ' - '.join(species,m['model_number'],dims).strip()
 
 def getModelsFromDB(cur):
     existing_model_ids = {}
@@ -217,22 +272,43 @@ def installModelCustomFields(cur,conn,models):
     conn.close()
 
 
-def installUniqeModels(cur,conn, ):
+
+
+def updateModel(modelID, payload):
+    url = server + '/api/v1/models/' + str(modelID)
+    headers = {
+        "accept": "application/json",
+        "Authorization": 'Bearer ' + token,
+        "content-type": "application/json"
+    }
+    results = requests.patch(url, payload, headers=headers)
+    return results.content
+
+def installUniqueModels(server,token,existing_model_ids ):
     #load first sheet of excel into a dataframe
     df = pd.read_excel('Master Inventory - RMJC 4-15-2023.xlsx', index_col=0, sheet_name=0) 
     #extract the unique values of Summary Name which will become the unique models 
 
             
-    #insert information 
-    try: 
-        cur.execute("INSERT INTO employees (first_name,last_name) VALUES (?, ?)", ("Maria","DB")) 
-    except mariadb.Error as e: 
-        print(f"Error: {e}")
-
-    conn.commit() 
-    print(f"Last Inserted ID: {cur.lastrowid}")
-        
-    conn.close()
+    M = snipeit.Models()
+    sumRegex = re.compile(r"(\w+) - (\w+) - ([0123456789.x]+)")
+    newSummaryRegex = re.compile(r"(\w+)-([0123456789.x]+)")
+    newSummaryRegex = re.compile(r"(\w+)")
+    for m in uniqueModels:
+        summaryMatch = newSummaryRegex.match(m['name'])
+        if(summaryMatch is None):
+            #invalid name, skip it
+            continue
+        existing_id = existing_model_ids.get(m['name'])
+        if(existing_id is None):
+            print(f"creating model {m['name']}")
+            r = M.create(server, token,  json.dumps(m))
+        else:
+            print(f"updating model {m['name']}")
+            r = updateModel(existing_id,m)
+            #r = M.updateModel(server, token, str(existing_id),json.dumps(m))
+        if("error" in r):
+            print(r)
 
 
 

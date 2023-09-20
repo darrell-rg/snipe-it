@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\CheckoutableCheckedIn;
+use App\Helpers\RFIDHelper;
 use Illuminate\Support\Facades\Gate;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
@@ -609,6 +610,7 @@ class AssetsController extends Controller
                 $asset->{$field->db_column} = $field_val;
             }
         }
+        $asset->serial = RFIDHelper::getRFIDHexString($asset); 
 
         if ($asset->save()) {
             if ($request->get('assigned_user')) {
@@ -683,6 +685,7 @@ class AssetsController extends Controller
                 }
             }
 
+            $asset->serial = RFIDHelper::getRFIDHexString($asset); 
 
             if ($asset->save()) {
                 if (($request->filled('assigned_user')) && ($target = User::find($request->get('assigned_user')))) {

@@ -20,6 +20,8 @@ import { getVectorContext } from 'ol/render.js';
 import { unByKey } from 'ol/Observable.js';
 import { Control, defaults as defaultControls } from 'ol/control.js';
 import Geolocation from 'ol/Geolocation.js';
+import { createStringXY } from 'ol/coordinate.js';
+import MousePosition from 'ol/control/MousePosition.js';
 
 // import bootstrap
 
@@ -36,7 +38,34 @@ window.getViewExtent = function () {
   return extent;
 }
 
-function scale(a) {
+
+function round(value, precision = 6) {
+  //69 miles per degree, (5280*69) * 0.00001 = 3.6.  so five decimal places is about one meter  
+  var multiplier = Math.pow(10, precision || 0);
+  return Math.round(value * multiplier) / multiplier;
+}
+
+
+function encodePosition(coords) {
+  // we put lng/x first
+  //format is @x,y,hdg,time
+  console.log(coords)
+  return "@" + round(coords[1]) + "," + round(coords[0])
+}
+
+
+
+function decodePosition(lastGpsValue) {
+  let cords = lastGpsValue.replace('@', '').split(',');
+  let a = parseFloat(cords[0]);
+  let b = parseFloat(cords[1]);
+  // assume lng/x is negative for USA, so it will be smaller then lat
+  if (a > b)
+    return [b, a];
+  return [a, b]
+}
+
+function alignMap(a) {
   //this is to align the map
   const x1shift = 17.0
   const y1shift = -5.0
@@ -48,8 +77,9 @@ function scale(a) {
 //topleft is 2nd diag rock in field  39.99126088233365, -105.07481263082146
 //bottom right corner of field is 39.988670996411216, -105.07148774841838
 //NOTE extents in web mercator are mirrored so it actualy bottom left, top right
-let topLeft = [-105.07148774841838, 39.99126088233365];
-let bottomRight = [-105.0748126308214, 39.988670996411216];
+//WARNING if you get the extents backwards, the map image will not show
+let topRight = [-105.07148774841838, 39.99126088233365];
+let bottomLeft = [-105.0748126308214, 39.988670996411216];
 
 // 0.0001 is about 5 meters
 let itemOffset = [0.0001, 0.0003];
@@ -59,14 +89,14 @@ function updateLocation(geometry = null) {
   const noteSelector = "#_snipeit_last_gps_16";
   let value = window.lastGpsString;
   if (value) {
-    let gpsLoc = value.replace('@', '').split(',').reverse();
-
+    let gpsLoc = decodePosition(lastGpsValue);
     let newLoc = lngLatToWebMercator(gpsLoc);
     //  itemLocation = [itemLocation[0]+itemOffset[0],itemLocation[1]+itemOffset[1]];
-    console.log("got  latLng from lastGpsString", gpsLoc, newLoc)
+    console.log("got  lngLat from lastGpsString", gpsLoc, newLoc)
 
     if (geometry)
-      itemLocationGeom.setCoordinates(newLoc);
+      geometry.setCoordinates(newLoc);
+    //itemLocationGeom.setCoordinates(newLoc);
 
     return gpsLoc;
 
@@ -77,9 +107,10 @@ function updateLocation(geometry = null) {
   return [0, 0];
 }
 
-let imageExtentDeg = [bottomRight[0], bottomRight[1], topLeft[0], topLeft[1]];
+let imageExtentDeg = [bottomLeft[0], bottomLeft[1], topRight[0], topRight[1]];
 let webMercatorCenter = lngLatToWebMercator(getCenter(imageExtentDeg))
-const imageExtentWebMercator = scale(transformExtent(imageExtentDeg, 'EPSG:4326', 'EPSG:3857'));
+//convert gps corners to meters, and then align the map with some small adjustments
+const imageExtentWebMercator = alignMap(transformExtent(imageExtentDeg, 'EPSG:4326', 'EPSG:3857'));
 
 if (window.lastGpsString) {
   //center on item if we have a loc for it
@@ -88,7 +119,7 @@ if (window.lastGpsString) {
 }
 
 
-let imgUrl = "/img/rmjMap.jpg";
+let imgUrl = "/img/rmjMap.webp?v=123";
 const imageLayer = new ImageLayer({
   source: new Static({
     url: imgUrl,
@@ -106,7 +137,7 @@ const tileLayer = new TileLayer({
 
 
 const itemLocationGeom = new Point(fromLonLat(itemLocation));
-const itemPosFeature =new Feature(itemLocationGeom);
+const itemPosFeature = new Feature(itemLocationGeom);
 itemPosFeature.setStyle(
   new Style({
     image: new CircleStyle({
@@ -143,7 +174,7 @@ const accuracyFeature = new Feature();
 
 const vectorLayer = new VectorLayer({
   source: new VectorSource({
-    features: [itemPosFeature,accuracyFeature, myPositionFeature],
+    features: [itemPosFeature, accuracyFeature, myPositionFeature],
   }),
 });
 
@@ -151,14 +182,119 @@ function el(id) {
   return document.getElementById(id);
 }
 
-const geolocation = new Geolocation({
-  // enableHighAccuracy must be set to true to have the heading value.
-  trackingOptions: {
-    enableHighAccuracy: true,
-  },
-  gpsProjection
+
+
+class TrackMyPosControl extends Control {
+  /**
+   * @param {Object} [opt_options] Control options.
+   */
+  constructor(opt_options) {
+    const options = opt_options || {};
+
+    const checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+    checkbox.id = "gpstrack";
+    checkbox.style = "display: inline-flex";
+
+    const element = document.createElement('div');
+    //element.className = 'rotate-north ol-unselectable ol-control';
+    element.style = "position:relative; top: 5px; left: 5px;"
+    const content = document.createElement('div');
+    content.style = "background-color: rgba(255, 255, 255, 0.6); line-height:1.6em; display:inline-block; height:1.8em; padding:-1px 3px; border-radius: 0px 8px 8px 0px;"
+    content.innerHTML = "Track Me"
+    element.appendChild(checkbox);
+    element.appendChild(content);
+
+    super({
+      element: element,
+      target: options.target,
+    });
+    //can not use this until calling super()
+    this.checkbox = checkbox;
+    this.geolocation = null;
+    this.content = content;
+    checkbox.addEventListener('change', this.handleTrackClick.bind(this), false);
+  }
+
+
+  handleTrackClick() {
+    this.doSetup();
+    this.geolocation.setTracking(this.checkbox.checked);
+    if(! this.checkbox.checked){
+      this.content.innerText = "Track Me"
+    }
+      
+    //needsViewFit = this.checked;
+  };
+
+  doSetup() {
+    if (this.geolocation)
+      return;
+
+    console.log("starting gps tracking, this=", this)
+
+    this.geolocation = new Geolocation({
+      // enableHighAccuracy must be set to true to have the heading value.
+      trackingOptions: {
+        enableHighAccuracy: true,
+      },
+      gpsProjection
+    });
+    this.needsViewFit = true;
+
+    // update the HTML page when the position changes.
+    this.geolocation.on('change', function () {
+      //el('accuracy').innerText = this.geolocation.getAccuracy() + ' [m]';
+      // el('altitude').innerText = geolocation.getAltitude() + ' [m]';
+      //el('heading').innerText = this.geolocation.getHeading() + ' [rad]';
+      this.content.innerText = "My Pos: " + encodePosition(this.geolocation.getPosition());
+    }.bind(this));
+
+    // handle geolocation error.
+    this.geolocation.on('error', function (error) {
+      console.log(error.message);
+      const info = document.getElementById('gpsinfo');
+      info.innerHTML = error.message;
+      info.style.display = '';
+    }.bind(this));
+
+    this.geolocation.on('change:accuracyGeometry', function () {
+      accuracyFeature.setGeometry(this.geolocation.getAccuracyGeometry());
+    }.bind(this));
+
+    this.geolocation.on('change:position', function () {
+      const coordinates = this.geolocation.getPosition();
+      const myPosGeom = coordinates ? new Point(fromLonLat(coordinates)) : null;
+      myPositionFeature.setGeometry(myPosGeom);
+      flash(myPositionFeature, 1)
+      if (this.needsViewFit && myPosGeom) {
+        var padding = [20, 20, 20, 20];
+        olMap.getView().fit(vectorLayer.getSource().getExtent(), {
+          padding: padding,
+        });
+        this.needsViewFit = false;
+      }
+
+    }.bind(this));
+  }
+
+}
+
+const mousePositionControl = new MousePosition({
+  coordinateFormat: createStringXY(4),
+  projection: 'EPSG:4326',
+  // comment the following two lines to have the mouse position
+  // be placed within the map.
+  className: 'custom-mouse-position',
+  target: document.getElementById('mouse-position'),
 });
 
+
+const trackMyPosControl = new TrackMyPosControl({
+
+});
+
+const extraControls = [mousePositionControl, trackMyPosControl];
 
 const olMap = new Map({
   layers: [
@@ -170,6 +306,7 @@ const olMap = new Map({
   view: new View({
     center: webMercatorCenter,
     zoom: 18,
+    maxZoom: 21,
     enableRotation: false
     // projection: webMercatorProj,
   }),
@@ -177,65 +314,12 @@ const olMap = new Map({
     attribution: false,
     zoom: false,
     rotate: false
-  }),
+  }).extend(extraControls)
 });
 
 window.olMap = olMap;
 
 
-function encodePosition(coords) {
-  console.log(coords)
-  return "@"+coords[1]+","+coords[0]
-}
-
-
-function addGpsListeners(){
-  console.log("adding gps listeners")
-  let needsViewFit = true;
-
-  el('gpstrack').addEventListener('change', function () {
-    console.log("starting gps tracking")
-    geolocation.setTracking(this.checked);
-    //needsViewFit = this.checked;
-  });
-  
-  // update the HTML page when the position changes.
-  geolocation.on('change', function () {
-    el('accuracy').innerText = geolocation.getAccuracy() + ' [m]';
-    // el('altitude').innerText = geolocation.getAltitude() + ' [m]';
-    el('heading').innerText = geolocation.getHeading() + ' [rad]';
-    el('gpspos').innerText = encodePosition(geolocation.getPosition())+ ' [m/s]';
-  });
-  
-  // handle geolocation error.
-  geolocation.on('error', function (error) {
-    console.log(error.message);
-    const info = document.getElementById('gpsinfo');
-    info.innerHTML = error.message;
-    info.style.display = '';
-  });
-  
-  geolocation.on('change:accuracyGeometry', function () {
-    accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
-  });
-
-  geolocation.on('change:position', function () {
-    const coordinates = geolocation.getPosition();
-    const myPosGeom = coordinates ? new Point(fromLonLat(coordinates)) : null;
-    myPositionFeature.setGeometry(myPosGeom);
-    flash(myPositionFeature, 1)
-    if (needsViewFit && myPosGeom)
-    {
-      var padding = [20, 20, 20, 20];
-      olMap.getView().fit(vectorLayer.getSource().getExtent(), {
-        padding: padding,
-      });
-      needsViewFit = false;
-    }
-
-  });
-  
-}
 
 
 const duration = 3000;
@@ -298,7 +382,7 @@ flash(itemPosFeature, 1)
 
 //this is for updating location from lastgps field
 //window.setInterval(updateLocation, 5000), geom;
-addGpsListeners()
+//addGpsListeners()
 //window.setTimeout(addGpsListeners,2000);
 // const staticImgExtent = imageLayer.getSource().getImageExtent()
 // console.log("static img extent =",staticImgExtent)

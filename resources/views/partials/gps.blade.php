@@ -14,12 +14,20 @@
             mapLink.href = "";
             mapLink.textContent = "";
             mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-            mapLink.textContent = `Show @${latitude}°,${longitude}° on Map.`;
+            mapLink.textContent = `Show @${longitude}°,${latitude}° on Map.`;
         }
 
     }
+
+    function round(value, precision=6) {
+        //69 miles per degree, (5280*69) * 0.00001 = 3.6.  so five decimal places is about one meter  
+        var multiplier = Math.pow(10, precision || 0);
+        return Math.round(value * multiplier) / multiplier;
+    }
+
     function encodePosition(position) {
-        return "@"+position.coords.latitude+","+position.coords.longitude
+        //format is @x,y,hdg,time
+        return "@"+round(position.coords.longitude)+","+round(position.coords.latitude)
     }
     function handlePositionUpdate(position,note_el) {
         var note_el = document.querySelector(noteSelector);
@@ -119,5 +127,5 @@
 
 </script>
 @if (isset($loadMap))
-<script type="module" src="{{ url('js/build/map.js') }}" nonce="{{ csrf_token() }}"></script>
+<script type="module" src="{{ url('js/build/map.js?v=2') }}" nonce="{{ csrf_token() }}"></script>
 @endif    
